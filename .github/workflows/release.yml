@@ -37,8 +37,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - name: Install
-        run: npm install
+      - name: Install (retries the Electron download, which GitHub sometimes answers with a 503)
+        run: |
+          npm install --ignore-scripts
+          for i in 1 2 3 4 5 6; do
+            if [ -f node_modules/electron/path.txt ]; then break; fi
+            echo "Electron download, attempt $i"
+            node node_modules/electron/install.js || sleep 30
+          done
+          test -f node_modules/electron/path.txt
       - name: Build
         run: ${{ matrix.cmd }}
         env:
