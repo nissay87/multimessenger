@@ -221,3 +221,6 @@ button.sm { padding: 5px 10px; font-size: 12px; }
 #toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 50; max-width: 80vw; padding: 10px 16px; border-radius: 10px; background: #222; color: #fff; font-size: 13px; box-shadow: 0 6px 24px rgba(0, 0, 0, .4); cursor: pointer; }
 #toast[hidden] { display: none; }
 .vnote[hidden], .vidhead img[hidden], .tabs[hidden] { display: none !important; }
+
+/* in-app question box (replaces the system confirm() box, which can leave text fields locked on Windows) */
+dialog.ask { width: 420px; }

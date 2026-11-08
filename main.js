@@ -584,6 +584,7 @@ function showWindow() {
   if (win.isMinimized()) win.restore();
   win.show();
   win.focus();
+  try { win.webContents.focus(); } catch {}   // keyboard focus back into the page after hiding to the tray
 }
 
 // ---------- keep the tray icon out of Windows' hidden "^" area ----------

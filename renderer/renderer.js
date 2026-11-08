@@ -355,7 +355,7 @@ $('cacheBtn').onclick = async () => {
 
 $('wipeBtn').onclick = async () => {
   if (!editing) return;
-  if (!confirm(`Sign out of "${editing.name}" and delete all its saved data?\nYou can then log in with a different account.`)) return;
+  if (!await askConfirm(`Sign out of "${editing.name}" and delete all its saved data?\nYou can then log in with a different account.`)) return;
   const id = editing.id;
   await window.api.clearData(id);
   dropView(id);   // recreate the page from scratch
@@ -364,7 +364,7 @@ $('wipeBtn').onclick = async () => {
 };
 
 $('resetBtn').onclick = async () => {
-  if (!confirm('Remove ALL services and delete their logins and data?')) return;
+  if (!await askConfirm('Remove ALL services and delete their logins and data?', { yes: 'Remove all' })) return;
   services = await window.api.resetAll();
   for (const id of [...views.keys()]) dropView(id);
   activeId = null;
@@ -372,7 +372,7 @@ $('resetBtn').onclick = async () => {
 };
 
 $('delBtn').onclick = async () => {
-  if (!editing || !confirm(`Delete "${editing.name}" and its stored login data?`)) return;
+  if (!editing || !await askConfirm(`Delete "${editing.name}" and its stored login data?`)) return;
   services = await window.api.deleteService(editing.id);
   dropView(editing.id);
   if (activeId === editing.id) activeId = services[0] ? services[0].id : null;
@@ -443,6 +443,39 @@ const VIDEO_URL = {
   youtube: /(youtube\.com\/(watch|shorts|live|embed)|youtu\.be\/)/i
 };
 let toastTimer = null;
+
+// In-app replacements for confirm() / alert(). The system boxes block the whole window and, on Windows, can leave
+// text fields (and the service pages) unable to take keyboard input afterwards.
+function askConfirm(msg, { yes = 'OK', no = 'Cancel', onlyOk = false } = {}) {
+  return new Promise(resolve => {
+    const d = $('askDlg');
+    $('askMsg').textContent = msg;
+    $('askYes').textContent = yes; $('askNo').textContent = no; $('askNo').hidden = onlyOk;
+    const done = r => { $('askYes').onclick = $('askNo').onclick = null; d.onclose = null; d.close(); restoreFocus(); resolve(r); };
+    $('askYes').onclick = () => done(true);
+    $('askNo').onclick = () => done(false);
+    d.onclose = () => done(false);
+    d.oncancel = () => done(false);
+    d.showModal();
+    $('askYes').focus();
+  });
+}
+const tell = msg => askConfirm(msg, { onlyOk: true });
+
+// Give keyboard focus back to the page you were using (the active service) if nothing in the app has it.
+function restoreFocus() {
+  setTimeout(() => {
+    try {
+      if (document.querySelector('dialog[open]')) return;
+      const a = document.activeElement;
+      if (a && a !== document.body && a.tagName !== 'WEBVIEW' && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+      const v = views.get(activeId);
+      if (v && v.__ready && !v.classList.contains('hidden')) v.focus();
+    } catch {}
+  }, 30);
+}
+window.addEventListener('focus', restoreFocus);
+
 function toast(msg, onClick) {
   const t = $('toast');
   t.textContent = msg; t.hidden = false;
@@ -536,7 +569,7 @@ async function videoFromPage2(s, v, m) {
   } else if (m.act === 'batch') {
     const urls = (m.urls || []).slice(0, 300);
     if (!urls.length) return toast('No posts found on this page yet. Scroll down so the posts load, then try again.');
-    if (!confirm(`Download ${urls.length} posts from this page?\n\nOnly the posts already loaded are included. Scroll down first to load more. Posts without a video will show as failed.`)) return;
+    if (!await askConfirm(`Download ${urls.length} posts from this page?\n\nOnly the posts already loaded are included. Scroll down first to load more. Posts without a video will show as failed.`)) return;
     toast(`Downloading ${urls.length} posts. Click here to see them in Downloads.`, showDownloads);
     for (const u of urls) {
       while (dlList.filter(d => d.kind === 'tool' && dlActive(d)).length >= 3) await new Promise(r => setTimeout(r, 700));
@@ -797,7 +830,7 @@ $('wsSave').onclick = async () => {
   selectWorkspace(id);
 };
 $('wsDelete').onclick = async () => {
-  if (!editingWs || !confirm(`Delete workspace "${editingWs.name}"?\nIts services are kept and move back to "All".`)) return;
+  if (!editingWs || !await askConfirm(`Delete workspace "${editingWs.name}"?\nIts services are kept and move back to "All".`)) return;
   const r = await window.api.deleteWorkspace(editingWs.id);
   workspaces = r.workspaces; services = r.services;
   $('wsDlg').close();
@@ -820,7 +853,7 @@ $('wsStarter').onclick = async () => {
   if (updates.length) services = await window.api.patchServices(updates);
   $('wsDlg').close();
   renderList();
-  if (made || sorted) alert(`Created ${made} workspace${made === 1 ? '' : 's'} and sorted ${sorted} service${sorted === 1 ? '' : 's'}.`);
+  if (made || sorted) tell(`Created ${made} workspace${made === 1 ? '' : 's'} and sorted ${sorted} service${sorted === 1 ? '' : 's'}.`);
 };
 
 // ---------- downloads ----------
@@ -861,9 +894,9 @@ function dlUpsert(rec) {
 }
 async function dlDo(rec, act) {
   if (act === 'open') {
-    if (RISKY.test(rec.name) && !confirm(`"${rec.name}" is a program or script and can run code on your PC.\nOpen it anyway?`)) return;
+    if (RISKY.test(rec.name) && !await askConfirm(`"${rec.name}" is a program or script and can run code on your PC.\nOpen it anyway?`)) return;
     const ok = await window.api.downloadAction(rec.id, 'open');
-    if (!ok) alert('Could not open the file. It may have been moved or deleted.');
+    if (!ok) tell('Could not open the file. It may have been moved or deleted.');
     return;
   }
   await window.api.downloadAction(rec.id, act);
