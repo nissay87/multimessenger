@@ -46,8 +46,14 @@ jobs:
             node node_modules/electron/install.js || sleep 30
           done
           test -f node_modules/electron/path.txt
-      - name: Build
-        run: ${{ matrix.cmd }}
+      - name: Build (tries up to 4 times, because GitHub's download servers sometimes answer 502 or 503)
+        run: |
+          for i in 1 2 3 4; do
+            echo "Build attempt $i"
+            if ${{ matrix.cmd }}; then exit 0; fi
+            sleep 30
+          done
+          exit 1
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
           DEBUG: electron-builder
