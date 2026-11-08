@@ -1,12 +1,19 @@
-# Builds the Windows, macOS and Linux downloads and attaches them to a GitHub Release.
-# Use: push a tag such as v1.3.17  (git tag v1.3.17 && git push origin v1.3.17)
+# Builds the Windows, macOS and Linux downloads and attaches them to one GitHub Release.
+# Use A: push a tag      git tag v1.3.22 && git push origin v1.3.22
+# Use B: Actions tab -> "Build and release" -> Run workflow -> type the tag name (for example v1.3.22)
 name: Build and release
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to create or update (for example v1.3.22)'
+        required: true
 permissions:
   contents: write
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
 jobs:
   build:
     strategy:
@@ -14,27 +21,57 @@ jobs:
       matrix:
         include:
           - os: windows-latest
+            name: windows
             cmd: npx electron-builder --win nsis portable --publish never
           - os: macos-latest
+            name: macos
             cmd: npx electron-builder --mac dmg --publish never
           - os: ubuntu-latest
+            name: linux
             cmd: npx electron-builder --linux AppImage deb tar.gz --publish never
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: npm install
-      - run: ${{ matrix.cmd }}
+      - name: Install
+        run: npm install
+      - name: Build
+        run: ${{ matrix.cmd }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-      - name: Upload to the release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+          DEBUG: electron-builder
+      - name: List what was built
+        if: always()
+        run: ls -la dist || true
+      - name: Keep the files
+        uses: actions/upload-artifact@v4
         with:
-          files: |
+          name: ${{ matrix.name }}
+          if-no-files-found: error
+          path: |
             dist/*.exe
             dist/*.dmg
             dist/*.AppImage
             dist/*.deb
             dist/*.tar.gz
+
+  release:
+    needs: build
+    if: ${{ !cancelled() && needs.build.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: files
+          merge-multiple: true
+      - run: ls -la files
+      - name: Publish the release (one job, so the three systems never collide)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          files: files/*
+          fail_on_unmatched_files: false
