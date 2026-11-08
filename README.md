@@ -97,6 +97,7 @@ Need a second account? Add the service again, or open its settings and choose **
 
 ## 🔔 Stays connected, tells you when something arrives
 
+- **Browser identity and separate sign-in window**: if a website refuses to sign in, open the service's settings, choose another **Browser identity** (Chrome, Firefox or Edge), save and reload it, or press **Sign in in a separate window…**. The window shares the service's login and closes back into the service.
 - **Notifications**: a website's own notifications become native Windows notifications. Click one to open that service.
 - **Unread counts**: red numbers on the sidebar, the taskbar icon and the tray tooltip. Mute any service.
 - **Tray and taskbar**: minimize goes to the taskbar, closing the window hides the app in the tray. On Windows 11 the app asks to keep its tray icon visible instead of tucked under the hidden **^** area (Settings → *Keep the tray icon visible*). On Windows 10, drag the icon out of the **^** area once, or use the *open taskbar settings* button.
@@ -371,8 +372,8 @@ On Windows open the terminal **as Administrator** (or turn on Developer Mode). T
 The repository contains `.github/workflows/release.yml`. Push a version tag and GitHub builds the **Windows, macOS and Linux** files on its own servers and attaches them to a release:
 
 ```bash
-git tag v1.3.23
-git push origin v1.3.23
+git tag v1.3.24
+git push origin v1.3.24
 ```
 
 Wait a few minutes, then open **Releases**. (You can also run it by hand from the **Actions** tab.)

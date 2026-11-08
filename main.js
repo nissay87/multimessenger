@@ -16,6 +16,11 @@ const catalog = require('./catalog.json');
 // keeps the normal Chrome identity.
 const FIREFOX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0';
 const isGoogleAuth = u => { try { const h = new URL(u).hostname; return h === 'accounts.google.com' || h.endsWith('.accounts.google.com'); } catch { return false; } };
+// Per-service browser identity: '' (Chrome, default), 'firefox' or 'edge'. Some sites treat identities differently.
+const UA_BY_SESSION = new WeakMap();
+const identityUA = id => id === 'firefox' ? FIREFOX_UA
+  : id === 'edge' ? `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${process.versions.chrome} Safari/537.36 Edg/${process.versions.chrome}`
+  : CHROME_UA;
 const CHROME_UA =
   `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ` +
   `Chrome/${process.versions.chrome} Safari/537.36`;
@@ -168,7 +173,9 @@ const ALLOWED_PERMS = ['notifications', 'media', 'clipboard-read', 'clipboard-sa
 async function applyProxy(svc) {
   const ses = session.fromPartition(partitionOf(svc.id));
   hookDownloads(ses, svc.id);
-  ses.setUserAgent(CHROME_UA);
+  const myUA = identityUA(svc.ua);
+  ses.setUserAgent(myUA);
+  UA_BY_SESSION.set(ses, { ua: myUA, ff: svc.ua === 'firefox' });
   try { ses.setPreloads([path.join(__dirname, 'stealth.js')]); } catch (e) {}   // look like normal Chrome to Google's sign-in
   // The Sec-CH-UA headers must say "Google Chrome" too, like the User-Agent does
   const major = String(process.versions.chrome).split('.')[0];
@@ -186,9 +193,17 @@ async function applyProxy(svc) {
     }
     const google = /(^|\.)(google\.com|youtube\.com|gstatic\.com)$/i;
     let host = ''; try { host = new URL(details.url).hostname; } catch {}
+    const idn = UA_BY_SESSION.get(ses) || { ua: CHROME_UA, ff: false };
+    if (idn.ff) {                                           // Firefox identity: no client hints at all
+      for (const k of Object.keys(h)) {
+        const l = k.toLowerCase();
+        if (l === 'user-agent') h[k] = idn.ua; else if (l.startsWith('sec-ch-ua')) delete h[k];
+      }
+      return cb({ requestHeaders: h });
+    }
     for (const k of Object.keys(h)) {
       const l = k.toLowerCase();
-      if (l === 'user-agent') h[k] = CHROME_UA;
+      if (l === 'user-agent') h[k] = idn.ua;
       else if (l === 'sec-ch-ua' && google.test(host)) h[k] = CH;          // only Google's sites get the "Google Chrome" brand
       else if (l === 'sec-ch-ua-full-version-list' && google.test(host)) h[k] = CHFULL;
     }
@@ -217,6 +232,23 @@ async function applyProxy(svc) {
   }
   await ses.closeAllConnections();
 }
+
+// A normal top-level window (not an embedded page) for signing in, sharing the service's session. When it is closed
+// the service reloads and picks up the new login.
+ipcMain.handle('services:loginWindow', (_e, id, url) => {
+  const ses = session.fromPartition(partitionOf(id));
+  const lw = new BrowserWindow({
+    width: 560, height: 800, parent: win && !win.isDestroyed() ? win : undefined, autoHideMenuBar: true,
+    title: 'Sign in', icon: WINDOW_ICON, backgroundColor: '#ffffff',
+    webPreferences: { session: ses, nodeIntegration: false, contextIsolation: true, sandbox: false, spellcheck: false }
+  });
+  const idn = UA_BY_SESSION.get(ses);
+  if (idn) lw.webContents.setUserAgent(idn.ua);
+  lw.webContents.setWindowOpenHandler(() => ({ action: 'allow' }));   // Google / Apple sign-in popups
+  lw.on('closed', () => { if (win && !win.isDestroyed()) win.webContents.send('login:closed', id); });
+  lw.loadURL(/^https?:/i.test(url || '') ? url : 'about:blank').catch(() => {});
+  return true;
+});
 
 // ---------- IPC: services ----------
 ipcMain.handle('catalog:get', () => catalog);
@@ -769,7 +801,7 @@ app.on('web-contents-created', (_e, wc) => {
     wc.on('did-start-navigation', (e, u, _inPlace, isMain) => {
       const url = (e && e.url) || u, main = e && e.isMainFrame !== undefined ? e.isMainFrame : isMain;
       if (!main || !/^https?:/i.test(url || '')) return;
-      const want = isGoogleAuth(url) ? FIREFOX_UA : CHROME_UA;
+      const want = isGoogleAuth(url) ? FIREFOX_UA : ((UA_BY_SESSION.get(wc.session) || {}).ua || CHROME_UA);
       try { if (wc.getUserAgent() !== want) wc.setUserAgent(want); } catch {}
     });
   }

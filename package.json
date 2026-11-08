@@ -1,6 +1,6 @@
 {
   "name": "multi-messenger",
-  "version": "1.3.23",
+  "version": "1.3.24",
   "description": "Multi-service messenger with per-service proxy support",
   "author": "nissay87",
   "license": "MIT",

@@ -83,6 +83,17 @@
       <label>Workspace
         <select id="fWs"></select>
       </label>
+      <label>Browser identity
+        <select id="fIdent">
+          <option value="">Chrome (default)</option>
+          <option value="firefox">Firefox</option>
+          <option value="edge">Microsoft Edge</option>
+        </select>
+      </label>
+      <p class="hint" id="identHint">Some websites accept sign-ins from one browser but not another. If a login keeps failing, try another identity, save, then reload the service.</p>
+      <div class="row" id="loginWinRow" style="display:flex;gap:8px;margin-bottom:8px">
+        <button type="button" id="loginWinBtn" class="ghost">Sign in in a separate window…</button>
+      </div>
 
       <fieldset id="proxyBox">
         <legend>

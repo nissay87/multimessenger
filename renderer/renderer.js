@@ -241,6 +241,8 @@ function openDialog(svc) {
   $('bMode').value = svc ? modeOf(svc) : 'always';
   $('bMin').value = (svc && svc.sleepMin) || 10;
   $('bMute').checked = !!(svc && svc.muted);
+  $('fIdent').value = (svc && svc.ua) || '';
+  $('loginWinRow').hidden = !svc;
   syncBgUi();
   $('dlg').showModal();
 }
@@ -257,6 +259,7 @@ function readForm() {
     mode: $('bMode').value,
     sleepMin: Math.max(1, Math.min(1440, Number($('bMin').value) || 10)),
     muted: $('bMute').checked,
+    ua: $('fIdent').value,
     proxy: {
       enabled: $('pEnabled').checked,
       type: $('pType').value,
@@ -279,6 +282,16 @@ async function persist(svc) {
   editing = svc;
   select(svc.id);
 }
+
+$('loginWinBtn').onclick = async () => {
+  if (!editing) return;
+  const svc = { ...readForm(), icon: editing.icon, zoom: editing.zoom };
+  services = await window.api.saveService(svc);            // make sure the identity and proxy chosen here are in use
+  const v = views.get(editing.id);
+  let url = svc.url; try { if (v && v.getURL && /^https?:/.test(v.getURL())) url = v.getURL(); } catch {}
+  await window.api.openLoginWindow(editing.id, url);
+};
+window.api.onLoginClosed(id => { if (views.has(id)) reloadService(id); });
 
 $('fType').onchange = () => {
   const c = catOf($('fType').value);

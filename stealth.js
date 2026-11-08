@@ -4,7 +4,7 @@
 const { webFrame } = require('electron');
 // Only Google's own sites need this. Other sites (Instagram, Facebook, WhatsApp ...) are left exactly as they are,
 // because pretending to be something else there can stop their pages from loading.
-if (!/(^|\.)(google\.com|youtube\.com|gstatic\.com|googleusercontent\.com|ggpht\.com)$/i.test(location.hostname)) return;
+if (!/Firefox\//.test(navigator.userAgent) && !/(^|\.)(google\.com|youtube\.com|gstatic\.com|googleusercontent\.com|ggpht\.com)$/i.test(location.hostname)) return;
 const major = String(process.versions.chrome).split('.')[0];
 const full = process.versions.chrome;
 webFrame.executeJavaScript(`(() => {
