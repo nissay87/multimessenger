@@ -40,10 +40,13 @@ module.exports = function init(ctx) {
     }
     return null;
   };
-  const findYtdlp = () => [getSettings().ytdlpPath, ownYtdlp(), onPath('yt-dlp')].find(exists) || null;
+  // a "tools" folder next to the program (or in its resources) also works, so the programs can simply be copied there
+  const sideTool = name => [path.join(path.dirname(process.execPath), 'tools'), path.join(process.resourcesPath || '', 'tools'), path.join(__dirname, 'tools')]
+    .map(d => path.join(d, IS_WIN ? name + '.exe' : name)).find(exists) || null;
+  const findYtdlp = () => [getSettings().ytdlpPath, ownYtdlp(), sideTool('yt-dlp'), onPath('yt-dlp')].find(exists) || null;
   const ownDeno = () => path.join(toolsDir(), IS_WIN ? 'deno.exe' : 'deno');
-  const findDeno = () => [ownDeno(), onPath('deno')].find(exists) || null;
-  const findFfmpeg = () => [getSettings().ffmpegPath, ownFfmpeg(), onPath('ffmpeg')].find(exists) || null;
+  const findDeno = () => [ownDeno(), sideTool('deno'), onPath('deno')].find(exists) || null;
+  const findFfmpeg = () => [getSettings().ffmpegPath, ownFfmpeg(), sideTool('ffmpeg'), onPath('ffmpeg')].find(exists) || null;
 
   // ---------- installing the helper programs ----------
   async function fetchTo(url, dest, svcId, kind) {

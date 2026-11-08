@@ -11,10 +11,10 @@ WhatsApp · Telegram · Instagram · X · Gmail · Discord · ChatGPT · Claude 
 [![Download](https://img.shields.io/github/v/release/nissay87/MultiMessenger?style=for-the-badge&label=Download&color=6d4aff&logo=windows&logoColor=white)](https://github.com/nissay87/MultiMessenger/releases/latest)
 [![Website](https://img.shields.io/badge/Website-nissay87.github.io-181b3a?style=for-the-badge&logo=githubpages&logoColor=white)](https://nissay87.github.io/MultiMessenger/)
 [![License](https://img.shields.io/badge/License-MIT-34d399?style=for-the-badge)](LICENSE)
-![Platform](https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4?style=for-the-badge&logo=windows11&logoColor=white)
+![Platform](https://img.shields.io/badge/Windows%20%7C%20macOS%20%7C%20Linux-0078d4?style=for-the-badge&logo=electron&logoColor=white)
 ![Electron](https://img.shields.io/badge/Electron-33-47848f?style=for-the-badge&logo=electron&logoColor=white)
 
-**[⬇ Download for Windows](https://github.com/nissay87/MultiMessenger/releases/latest)** &nbsp;·&nbsp; **[🌐 Website](https://nissay87.github.io/MultiMessenger/)** &nbsp;·&nbsp; **[🐛 Report a problem](https://github.com/nissay87/MultiMessenger/issues)**
+**[⬇ Download](https://github.com/nissay87/MultiMessenger/releases/latest)** &nbsp;·&nbsp; **[🌐 Website](https://nissay87.github.io/MultiMessenger/)** &nbsp;·&nbsp; **[🐛 Report a problem](https://github.com/nissay87/MultiMessenger/issues)**
 
 <br />
 
@@ -153,11 +153,153 @@ Zoom each service with **Ctrl +**, **Ctrl -**, **Ctrl 0** or **Ctrl + mouse whee
 
 ## 📥 Install
 
-1. Open the **[Releases page](https://github.com/nissay87/MultiMessenger/releases/latest)**.
-2. Download `MultiMessenger Setup x.y.z.exe` and run it.
-3. Start **MultiMessenger** from the Start menu or the desktop shortcut.
+Download the file for your system from the **[Releases page](https://github.com/nissay87/MultiMessenger/releases/latest)**.
 
-> The installer is **not code-signed**, so Windows SmartScreen may show *"Windows protected your PC"*. Choose **More info → Run anyway**. If you prefer not to trust a prebuilt file, run it from source (below).
+| System | File | How |
+|---|---|---|
+| **Windows 10 / 11** | `MultiMessenger-x.y.z-win-x64.exe` (installer) or `MultiMessenger-x.y.z-portable.exe` | Run it. |
+| **macOS** | `MultiMessenger-x.y.z-mac-arm64.dmg` (Apple silicon) or `-x64.dmg` (Intel) | Open the `.dmg`, drag the app to **Applications**. |
+| **Linux** | `.AppImage`, `.deb` or `.tar.gz` | See [Linux](#-linux) below. |
+| **Android** | not available | MultiMessenger is a desktop (Electron) app, so there is no APK. |
+
+> The apps are **not code-signed**.
+> - **Windows** SmartScreen may say *"Windows protected your PC"*: choose **More info → Run anyway**.
+> - **macOS** may say the app *"cannot be opened"*: right-click the app, choose **Open**, then **Open** again. If it still refuses, run `xattr -cr /Applications/MultiMessenger.app` once.
+
+### 🐧 Linux
+
+**AppImage** (works on most distributions, nothing to install):
+
+```bash
+chmod +x MultiMessenger-*-linux-*.AppImage
+./MultiMessenger-*-linux-*.AppImage
+# if it says FUSE is missing:  sudo apt install libfuse2     (Ubuntu / Debian)
+# if it says sandbox error:    ./MultiMessenger-*.AppImage --no-sandbox
+```
+
+**Debian / Ubuntu** (`.deb`):
+
+```bash
+sudo apt install ./MultiMessenger-*-linux-*.deb
+# then start MultiMessenger from your application menu
+```
+
+**Any distribution** (`.tar.gz`):
+
+```bash
+tar -xzf MultiMessenger-*-linux-*.tar.gz
+cd MultiMessenger-*-linux-*
+./multimessenger            # the file name can differ; run  ls  to see it
+```
+
+**From source** (any distribution) needs Node.js and Git:
+
+```bash
+git clone https://github.com/nissay87/MultiMessenger.git
+cd MultiMessenger
+npm install
+npm install-scripts approve electron
+node node_modules/electron/install.js
+npm start
+```
+
+---
+
+## 🧰 Helper programs for the video downloader
+
+The downloader needs three small programs. **MultiMessenger can install them for you** (Settings → Video downloader, or the first time you download). If you prefer to install them yourself, use any method below. The app looks for them in this order: the path you set in Settings, its own `tools` folder, a `tools` folder next to the app, then your system `PATH`.
+
+| Program | What it does |
+|---|---|
+| [yt-dlp](https://github.com/yt-dlp/yt-dlp) | finds and downloads the video |
+| [ffmpeg](https://ffmpeg.org/) | merges video and audio, makes MP4 and MP3 |
+| [Deno](https://deno.com/) | the JavaScript engine yt-dlp needs for YouTube |
+
+### One-line scripts (recommended)
+
+**Windows** (PowerShell, no admin needed):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install-tools.ps1
+```
+
+**Linux and macOS:**
+
+```bash
+bash scripts/install-tools.sh
+```
+
+Both scripts put the three programs in the app's `tools` folder, so the app finds them with no further setup:
+
+| System | Folder |
+|---|---|
+| Windows | `%APPDATA%\multi-messenger\tools` |
+| macOS | `~/Library/Application Support/multi-messenger/tools` |
+| Linux | `~/.config/multi-messenger/tools` |
+
+### Package managers
+
+**Windows: winget**
+
+```powershell
+winget install yt-dlp.yt-dlp
+winget install DenoLand.Deno
+winget install Gyan.FFmpeg
+```
+
+**Windows: Scoop**
+
+```powershell
+scoop install yt-dlp deno ffmpeg
+```
+
+**Windows: Chocolatey**
+
+```powershell
+choco install yt-dlp deno ffmpeg
+```
+
+**macOS: Homebrew**
+
+```bash
+brew install yt-dlp deno ffmpeg
+```
+
+**Linux: Snap**
+
+```bash
+sudo snap install yt-dlp
+sudo snap install ffmpeg
+sudo snap install deno
+```
+
+> Snap programs are sandboxed and can only reach files in your home folder, which is fine for the default Downloads folder. If one is missing from the store, use the direct download below.
+
+**Debian / Ubuntu: apt**
+
+```bash
+sudo apt install ffmpeg
+sudo snap install deno          # or the direct download below
+python3 -m pip install -U yt-dlp --break-system-packages    # or: pipx install yt-dlp
+```
+
+**Fedora:** `sudo dnf install ffmpeg yt-dlp` (enable RPM Fusion first for ffmpeg) · **Arch:** `sudo pacman -S yt-dlp ffmpeg deno`
+
+### Direct download
+
+Download, then copy the files into the `tools` folder from the table above (or anywhere on your `PATH`).
+
+| | Windows | macOS | Linux |
+|---|---|---|---|
+| **yt-dlp** | [yt-dlp.exe](https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe) | [yt-dlp_macos](https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos) | [yt-dlp_linux](https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux) |
+| **Deno** (zip) | [x86_64 Windows](https://github.com/denoland/deno/releases/latest/download/deno-x86_64-pc-windows-msvc.zip) | [Apple silicon](https://github.com/denoland/deno/releases/latest/download/deno-aarch64-apple-darwin.zip) · [Intel](https://github.com/denoland/deno/releases/latest/download/deno-x86_64-apple-darwin.zip) | [x86_64](https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip) · [ARM64](https://github.com/denoland/deno/releases/latest/download/deno-aarch64-unknown-linux-gnu.zip) |
+| **ffmpeg** | [BtbN build (zip)](https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-win64-gpl.zip) · [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) | [ffmpeg.org downloads](https://ffmpeg.org/download.html#build-mac) or `brew` | [static build](https://johnvansickle.com/ffmpeg/) |
+
+On Linux and macOS, make the files runnable: `chmod +x yt-dlp deno ffmpeg`.
+
+### Manual setup in the app
+
+Settings → Video downloader → **Choose yt-dlp…** / **Choose ffmpeg…** lets you point to your own copies anywhere on disk.
 
 ---
 
@@ -214,15 +356,28 @@ Do not run `npm audit fix --force`. The warnings come from the build tooling and
 
 ## 📦 Build your own installer
 
-Open the terminal **as Administrator** (or turn on Developer Mode in Windows Settings), then:
-
 ```bash
-npm run dist            # installer (.exe)
-npm run dist:portable   # single portable .exe
-npm run dist:msi        # .msi installer
+npm run dist:win       # Windows installer (.exe)   - run on Windows
+npm run dist:portable  # Windows portable .exe
+npm run dist:msi       # Windows .msi
+npm run dist:mac       # macOS .dmg                 - must be run on a Mac
+npm run dist:linux     # Linux AppImage, .deb, .tar.gz - run on Linux
 ```
 
-The files appear in the `dist` folder. To publish: **GitHub → Releases → Draft a new release**, create a tag such as `v1.3.17`, attach the files from `dist`, and publish.
+On Windows open the terminal **as Administrator** (or turn on Developer Mode). The files appear in the `dist` folder. Each system must be built on that system. A DMG can only be built on a Mac and Linux packages on Linux.
+
+### Let GitHub build all of them for you
+
+The repository contains `.github/workflows/release.yml`. Push a version tag and GitHub builds the **Windows, macOS and Linux** files on its own servers and attaches them to a release:
+
+```bash
+git tag v1.3.17
+git push origin v1.3.17
+```
+
+Wait a few minutes, then open **Releases**. (You can also run it by hand from the **Actions** tab.)
+
+Or publish by hand: **Releases → Draft a new release**, create a tag, attach the files from `dist`, and publish.
 
 <details>
 <summary><b>Build helpers fail to download?</b></summary>
@@ -253,6 +408,8 @@ catalog.json           the list of built-in services
 renderer/              the app's interface (HTML, CSS, JS, themes, service icons)
 assets/                app, window and tray icons (shipped inside the app)
 build/                 installer icon files
+scripts/               install-tools.ps1 / install-tools.sh (yt-dlp, ffmpeg, Deno)
+.github/workflows/     release.yml (builds Windows, macOS and Linux downloads)
 docs/                  the GitHub Pages website
 ```
 
@@ -264,7 +421,7 @@ MultiMessenger has **no accounts, no analytics and no server of its own**. Servi
 
 ## ⚠️ Known limits
 
-- **Windows is the supported system.** The code is cross-platform Electron, but tray icons, taskbar badges and start-at-login are designed for Windows and are untested elsewhere.
+- **Windows is the main system.** The macOS and Linux builds come from the same Electron code, but tray icons, taskbar badges and start-at-login are designed for Windows and have not been tested on macOS or Linux. There is no Android version.
 - Google and Facebook sometimes refuse sign-in in embedded browsers. The app presents itself as normal Chrome, which usually works, but a provider can still block it.
 - A sleeping service is unloaded and cannot show notifications until you open it.
 - Websites change often. If a service stops working, reload it, clear its cache, or [open an issue](https://github.com/nissay87/MultiMessenger/issues).

@@ -9,7 +9,10 @@
     "start": "electron .",
     "dist": "electron-builder --win nsis",
     "dist:portable": "electron-builder --win portable",
-    "dist:msi": "electron-builder --win msi"
+    "dist:msi": "electron-builder --win msi",
+    "dist:win": "electron-builder --win nsis",
+    "dist:mac": "electron-builder --mac dmg",
+    "dist:linux": "electron-builder --linux AppImage deb tar.gz"
   },
   "dependencies": {
     "socks": "^2.8.3"
@@ -53,6 +56,37 @@
     "msi": {
       "oneClick": false,
       "perMachine": true
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.social-networking",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "MultiMessenger"
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Network;InstantMessaging;",
+      "maintainer": "nissay87 <y.allivand@gmail.com>",
+      "synopsis": "Multi-service messenger with a proxy for each service",
+      "target": [
+        "AppImage",
+        "deb",
+        "tar.gz"
+      ]
+    },
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.exe"
     }
   },
   "homepage": "https://nissay87.github.io/MultiMessenger/",
