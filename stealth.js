@@ -2,6 +2,9 @@
 // more than the User-Agent text: it also reads navigator.userAgentData and window.chrome. Electron reports no
 // "Google Chrome" brand there, so the page looks like a custom app. This makes those values match a normal Chrome.
 const { webFrame } = require('electron');
+// Only Google's own sites need this. Other sites (Instagram, Facebook, WhatsApp ...) are left exactly as they are,
+// because pretending to be something else there can stop their pages from loading.
+if (!/(^|\.)(google\.com|youtube\.com|gstatic\.com|googleusercontent\.com|ggpht\.com)$/i.test(location.hostname)) return;
 const major = String(process.versions.chrome).split('.')[0];
 const full = process.versions.chrome;
 webFrame.executeJavaScript(`(() => {

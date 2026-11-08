@@ -371,8 +371,8 @@ On Windows open the terminal **as Administrator** (or turn on Developer Mode). T
 The repository contains `.github/workflows/release.yml`. Push a version tag and GitHub builds the **Windows, macOS and Linux** files on its own servers and attaches them to a release:
 
 ```bash
-git tag v1.3.20
-git push origin v1.3.20
+git tag v1.3.21
+git push origin v1.3.21
 ```
 
 Wait a few minutes, then open **Releases**. (You can also run it by hand from the **Actions** tab.)

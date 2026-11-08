@@ -184,11 +184,13 @@ async function applyProxy(svc) {
       }
       return cb({ requestHeaders: h });
     }
+    const google = /(^|\.)(google\.com|youtube\.com|gstatic\.com)$/i;
+    let host = ''; try { host = new URL(details.url).hostname; } catch {}
     for (const k of Object.keys(h)) {
       const l = k.toLowerCase();
       if (l === 'user-agent') h[k] = CHROME_UA;
-      else if (l === 'sec-ch-ua') h[k] = CH;
-      else if (l === 'sec-ch-ua-full-version-list') h[k] = CHFULL;
+      else if (l === 'sec-ch-ua' && google.test(host)) h[k] = CH;          // only Google's sites get the "Google Chrome" brand
+      else if (l === 'sec-ch-ua-full-version-list' && google.test(host)) h[k] = CHFULL;
     }
     cb({ requestHeaders: h });
   });
