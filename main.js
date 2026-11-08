@@ -250,6 +250,61 @@ ipcMain.handle('services:loginWindow', (_e, id, url) => {
   return true;
 });
 
+// ---------- import a login from the real browser (cookies.txt or JSON) ----------
+// Google and X refuse sign-in inside embedded apps. Signing in with the normal browser and importing that browser's
+// cookies for the site gives the service the same logged-in session without any sign-in page.
+function parseCookieFile(text) {
+  const out = [];
+  const t = String(text || '').trim();
+  if (t.startsWith('[') || t.startsWith('{')) {                       // JSON (EditThisCookie, Cookie-Editor ...)
+    let j = JSON.parse(t); if (!Array.isArray(j)) j = j.cookies || [];
+    for (const c of j) if (c && c.name && c.domain) out.push({
+      domain: c.domain, name: c.name, value: String(c.value ?? ''), path: c.path || '/', secure: !!c.secure,
+      httpOnly: !!c.httpOnly, hostOnly: !!c.hostOnly, exp: c.expirationDate || c.expires || 0, sameSite: c.sameSite
+    });
+    return out;
+  }
+  for (let line of t.split(/\r?\n/)) {                                 // Netscape cookies.txt
+    let httpOnly = false;
+    if (line.startsWith('#HttpOnly_')) { httpOnly = true; line = line.slice(10); }
+    else if (!line.trim() || line.startsWith('#')) continue;
+    const f = line.split('\t');
+    if (f.length < 7) continue;
+    out.push({ domain: f[0], hostOnly: f[1].toUpperCase() !== 'TRUE', path: f[2] || '/', secure: f[3].toUpperCase() === 'TRUE',
+      exp: Number(f[4]) || 0, name: f[5], value: f.slice(6).join('\t'), httpOnly });
+  }
+  return out;
+}
+async function importCookiesInto(ses, text) {
+  const list = parseCookieFile(text);
+  let ok = 0, bad = 0;
+  for (const c of list) {
+    const host = c.domain.replace(/^\./, '');
+    const details = { url: `${c.secure ? 'https' : 'http'}://${host}${c.path}`, name: c.name, value: c.value, path: c.path,
+      secure: c.secure, httpOnly: c.httpOnly };
+    if (!c.hostOnly && !/^__Host-/.test(c.name)) details.domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+    if (c.exp > 0) details.expirationDate = c.exp > 1e12 ? c.exp / 1000 : c.exp;
+    const ss = String(c.sameSite || '').toLowerCase();
+    if (ss === 'no_restriction' || ss === 'none') details.sameSite = 'no_restriction';
+    else if (ss === 'lax') details.sameSite = 'lax'; else if (ss === 'strict') details.sameSite = 'strict';
+    try { await ses.cookies.set(details); ok++; } catch { bad++; }
+  }
+  try { await ses.cookies.flushStore(); } catch {}
+  return { ok, bad, total: list.length };
+}
+ipcMain.handle('services:importCookies', async (_e, id, filePath) => {
+  const ses = session.fromPartition(partitionOf(id));
+  let file = filePath;
+  if (!file) {
+    const r = await dialog.showOpenDialog(win, { title: 'Choose the exported cookies file', properties: ['openFile'],
+      filters: [{ name: 'Cookies (.txt or .json)', extensions: ['txt', 'json'] }, { name: 'All files', extensions: ['*'] }] });
+    if (r.canceled || !r.filePaths[0]) return { canceled: true };
+    file = r.filePaths[0];
+  }
+  try { return await importCookiesInto(ses, fs.readFileSync(file, 'utf8')); }
+  catch (e) { return { error: String(e.message || e) }; }
+});
+
 // ---------- IPC: services ----------
 ipcMain.handle('catalog:get', () => catalog);
 ipcMain.handle('services:list', () => loadServices());

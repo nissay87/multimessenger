@@ -283,6 +283,14 @@ async function persist(svc) {
   select(svc.id);
 }
 
+$('cookieBtn').onclick = async () => {
+  if (!editing) return;
+  const r = await window.api.importCookies(editing.id);
+  if (r.canceled) return;
+  if (r.error) return tell('Could not read that file: ' + r.error);
+  await tell(`Imported ${r.ok} of ${r.total} cookies${r.bad ? ` (${r.bad} were refused)` : ''}.` + (r.ok ? '\nThe service will reload now.' : '\nNo cookies were found. Export the cookies of the site itself (for example x.com) and try again.'));
+  if (r.ok && views.has(editing.id)) reloadService(editing.id);
+};
 $('loginWinBtn').onclick = async () => {
   if (!editing) return;
   const svc = { ...readForm(), icon: editing.icon, zoom: editing.zoom };

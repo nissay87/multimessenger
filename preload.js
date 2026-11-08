@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('api', {
   clearCache: id => ipcRenderer.invoke('services:clearCache', id),
   openLoginWindow: (id, url) => ipcRenderer.invoke('services:loginWindow', id, url),
   onLoginClosed: cb => ipcRenderer.on('login:closed', (_e, id) => cb(id)),
+  importCookies: (id, file) => ipcRenderer.invoke('services:importCookies', id, file),
   clearData: id => ipcRenderer.invoke('services:clearData', id),
   resetAll: () => ipcRenderer.invoke('services:reset'),
   fetchFavicon: (id, url) => ipcRenderer.invoke('services:favicon', id, url),
