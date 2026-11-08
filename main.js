@@ -11,6 +11,11 @@ const { execFile } = require('child_process');
 const { startRelay, stopRelay } = require('./relay');
 const catalog = require('./catalog.json');
 
+// Google refuses to sign in inside anything that looks like an embedded Chromium app. Its sign-in pages are
+// therefore opened with a Firefox identity (the same trick other multi-service messengers use); every other site
+// keeps the normal Chrome identity.
+const FIREFOX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0';
+const isGoogleAuth = u => { try { const h = new URL(u).hostname; return h === 'accounts.google.com' || h.endsWith('.accounts.google.com'); } catch { return false; } };
 const CHROME_UA =
   `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ` +
   `Chrome/${process.versions.chrome} Safari/537.36`;
@@ -164,6 +169,29 @@ async function applyProxy(svc) {
   const ses = session.fromPartition(partitionOf(svc.id));
   hookDownloads(ses, svc.id);
   ses.setUserAgent(CHROME_UA);
+  try { ses.setPreloads([path.join(__dirname, 'stealth.js')]); } catch (e) {}   // look like normal Chrome to Google's sign-in
+  // The Sec-CH-UA headers must say "Google Chrome" too, like the User-Agent does
+  const major = String(process.versions.chrome).split('.')[0];
+  const CH = `"Not_A Brand";v="24", "Chromium";v="${major}", "Google Chrome";v="${major}"`;
+  const CHFULL = `"Not_A Brand";v="24.0.0.0", "Chromium";v="${process.versions.chrome}", "Google Chrome";v="${process.versions.chrome}"`;
+  ses.webRequest.onBeforeSendHeaders((details, cb) => {
+    const h = details.requestHeaders;
+    if (isGoogleAuth(details.url)) {                       // Firefox sends no client hints and no "Chrome" text
+      for (const k of Object.keys(h)) {
+        const l = k.toLowerCase();
+        if (l === 'user-agent') h[k] = FIREFOX_UA;
+        else if (l.startsWith('sec-ch-ua')) delete h[k];
+      }
+      return cb({ requestHeaders: h });
+    }
+    for (const k of Object.keys(h)) {
+      const l = k.toLowerCase();
+      if (l === 'user-agent') h[k] = CHROME_UA;
+      else if (l === 'sec-ch-ua') h[k] = CH;
+      else if (l === 'sec-ch-ua-full-version-list') h[k] = CHFULL;
+    }
+    cb({ requestHeaders: h });
+  });
   try { ses.setSpellCheckerEnabled(!!settings.spellcheck); } catch (e) {}
   ses.setPermissionRequestHandler((wc, perm, cb) => cb(ALLOWED_PERMS.includes(perm)));
   ses.setPermissionCheckHandler((wc, perm) => ALLOWED_PERMS.includes(perm));
@@ -690,6 +718,15 @@ function guestContextMenu(wc, params) {
 }
 
 app.on('web-contents-created', (_e, wc) => {
+  // keep what the page itself can read (navigator.userAgent) in line with the headers above
+  if (wc.getType() === 'webview' || wc.getType() === 'window') {
+    wc.on('did-start-navigation', (e, u, _inPlace, isMain) => {
+      const url = (e && e.url) || u, main = e && e.isMainFrame !== undefined ? e.isMainFrame : isMain;
+      if (!main || !/^https?:/i.test(url || '')) return;
+      const want = isGoogleAuth(url) ? FIREFOX_UA : CHROME_UA;
+      try { if (wc.getUserAgent() !== want) wc.setUserAgent(want); } catch {}
+    });
+  }
   if (wc.getType() !== 'webview') return;
 
   wc.on('context-menu', (_ev, params) => guestContextMenu(wc, params));

@@ -9,12 +9,12 @@
 WhatsApp · Telegram · Instagram · X · Gmail · Discord · ChatGPT · Claude · and 20 more, in a single sidebar.
 
 [![Download](https://img.shields.io/github/v/release/nissay87/MultiMessenger?style=for-the-badge&label=Download&color=6d4aff&logo=windows&logoColor=white)](https://github.com/nissay87/MultiMessenger/releases/latest)
-[![Website](https://img.shields.io/badge/Website-nissay87.github.io-181b3a?style=for-the-badge&logo=githubpages&logoColor=white)](https://nissay87.github.io/MultiMessenger/)
+[![Website](https://img.shields.io/badge/Website-nissay87.github.io-181b3a?style=for-the-badge&logo=githubpages&logoColor=white)](https://nissay87.github.io/multimessenger/)
 [![License](https://img.shields.io/badge/License-MIT-34d399?style=for-the-badge)](LICENSE)
 ![Platform](https://img.shields.io/badge/Windows%20%7C%20macOS%20%7C%20Linux-0078d4?style=for-the-badge&logo=electron&logoColor=white)
 ![Electron](https://img.shields.io/badge/Electron-33-47848f?style=for-the-badge&logo=electron&logoColor=white)
 
-**[⬇ Download](https://github.com/nissay87/MultiMessenger/releases/latest)** &nbsp;·&nbsp; **[🌐 Website](https://nissay87.github.io/MultiMessenger/)** &nbsp;·&nbsp; **[🐛 Report a problem](https://github.com/nissay87/MultiMessenger/issues)**
+**[⬇ Download](https://github.com/nissay87/MultiMessenger/releases/latest)** &nbsp;·&nbsp; **[🌐 Website](https://nissay87.github.io/multimessenger/)** &nbsp;·&nbsp; **[🐛 Report a problem](https://github.com/nissay87/MultiMessenger/issues)**
 
 <br />
 
@@ -371,8 +371,8 @@ On Windows open the terminal **as Administrator** (or turn on Developer Mode). T
 The repository contains `.github/workflows/release.yml`. Push a version tag and GitHub builds the **Windows, macOS and Linux** files on its own servers and attaches them to a release:
 
 ```bash
-git tag v1.3.17
-git push origin v1.3.17
+git tag v1.3.19
+git push origin v1.3.19
 ```
 
 Wait a few minutes, then open **Releases**. (You can also run it by hand from the **Actions** tab.)
@@ -422,7 +422,8 @@ MultiMessenger has **no accounts, no analytics and no server of its own**. Servi
 ## ⚠️ Known limits
 
 - **Windows is the main system.** The macOS and Linux builds come from the same Electron code, but tray icons, taskbar badges and start-at-login are designed for Windows and have not been tested on macOS or Linux. There is no Android version.
-- Google and Facebook sometimes refuse sign-in in embedded browsers. The app presents itself as normal Chrome, which usually works, but a provider can still block it.
+- Google and Facebook sometimes refuse sign-in in embedded browsers ("Couldn't sign you in – this browser or app may not be secure"). The app presents itself as normal Chrome (User-Agent, client hints and browser brand values), which usually works, but a provider can still block it. If it happens: press **Try again**, use **Sign out & clear data** on that service and sign in again, make sure the app is the latest version, and sign in from the service's own page (for YouTube: the *Sign in* button) rather than from a link inside another site. YouTube works without signing in; you only need it for private or age-restricted videos.
+- **Google sign-in** (Gmail, YouTube, Google Chat): the app shows Google's sign-in page as Firefox, because Google blocks embedded Chromium apps. This works for most accounts, but Google decides, and may still ask for extra verification. If you see *"This browser or app may not be secure"*, close the service, choose **Sign out & clear data**, and try again.
 - A sleeping service is unloaded and cannot show notifications until you open it.
 - Websites change often. If a service stops working, reload it, clear its cache, or [open an issue](https://github.com/nissay87/MultiMessenger/issues).
 
