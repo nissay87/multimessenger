@@ -371,8 +371,8 @@ On Windows open the terminal **as Administrator** (or turn on Developer Mode). T
 The repository contains `.github/workflows/release.yml`. Push a version tag and GitHub builds the **Windows, macOS and Linux** files on its own servers and attaches them to a release:
 
 ```bash
-git tag v1.3.19
-git push origin v1.3.19
+git tag v1.3.20
+git push origin v1.3.20
 ```
 
 Wait a few minutes, then open **Releases**. (You can also run it by hand from the **Actions** tab.)
@@ -423,7 +423,7 @@ MultiMessenger has **no accounts, no analytics and no server of its own**. Servi
 
 - **Windows is the main system.** The macOS and Linux builds come from the same Electron code, but tray icons, taskbar badges and start-at-login are designed for Windows and have not been tested on macOS or Linux. There is no Android version.
 - Google and Facebook sometimes refuse sign-in in embedded browsers ("Couldn't sign you in – this browser or app may not be secure"). The app presents itself as normal Chrome (User-Agent, client hints and browser brand values), which usually works, but a provider can still block it. If it happens: press **Try again**, use **Sign out & clear data** on that service and sign in again, make sure the app is the latest version, and sign in from the service's own page (for YouTube: the *Sign in* button) rather than from a link inside another site. YouTube works without signing in; you only need it for private or age-restricted videos.
-- **Google sign-in** (Gmail, YouTube, Google Chat): the app shows Google's sign-in page as Firefox, because Google blocks embedded Chromium apps. This works for most accounts, but Google decides, and may still ask for extra verification. If you see *"This browser or app may not be secure"*, close the service, choose **Sign out & clear data**, and try again.
+- **Google sign-in** (Gmail, YouTube, Google Chat): Google blocks embedded apps, so the app opens Google's sign-in page in its own small window that looks like Firefox, then returns to the service signed in. This works for most accounts, but Google decides, and may still ask for extra verification or refuse. If it does, choose **Sign out & clear data** and try again.
 - A sleeping service is unloaded and cannot show notifications until you open it.
 - Websites change often. If a service stops working, reload it, clear its cache, or [open an issue](https://github.com/nissay87/MultiMessenger/issues).
 

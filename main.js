@@ -717,7 +717,50 @@ function guestContextMenu(wc, params) {
   Menu.buildFromTemplate(t).popup({ window: host ? BrowserWindow.fromWebContents(host) : win });
 }
 
+// Google sign-in runs in its own small window (a normal top-level window, not a <webview>) that shares the
+// service's session. When it lands back on the service, the window closes and the service continues signed in.
+const googleLogins = new Map(); // service webContents id -> login window
+function openGoogleLogin(wc, url) {
+  const old = googleLogins.get(wc.id);
+  if (old && !old.isDestroyed()) { old.focus(); return; }
+  const parent = win && !win.isDestroyed() ? win : undefined;
+  const lw = new BrowserWindow({
+    width: 520, height: 760, parent, modal: false, autoHideMenuBar: true, title: 'Sign in with Google',
+    icon: WINDOW_ICON, backgroundColor: '#ffffff',
+    webPreferences: { session: wc.session, nodeIntegration: false, contextIsolation: true, sandbox: false, spellcheck: false }
+  });
+  googleLogins.set(wc.id, lw);
+  lw.webContents.setUserAgent(FIREFOX_UA);
+  const done = next => {
+    if (lw.isDestroyed()) return;
+    lw.destroy();
+    if (!wc.isDestroyed()) { try { wc.loadURL(next); } catch {} }
+  };
+  const check = (_e, u, _ip, isMain) => {
+    const nu = (_e && _e.url) || u;
+    const main = _e && _e.isMainFrame !== undefined ? _e.isMainFrame : (typeof isMain === 'boolean' ? isMain : true);
+    if (main && /^https?:/i.test(nu || '') && !isGoogleAuth(nu) && !/(^|\.)google\.com$/i.test(new URL(nu).hostname)) done(nu);
+    else if (main && /^https?:\/\/(www\.)?google\.com\/?(\?|$)/i.test(nu || '')) done(nu);
+  };
+  lw.webContents.on('did-navigate', check);
+  lw.webContents.on('did-redirect-navigation', check);
+  lw.webContents.setWindowOpenHandler(({ url: u }) => { lw.webContents.loadURL(u); return { action: 'deny' }; });
+  lw.on('closed', () => googleLogins.delete(wc.id));
+  // the service page behind the window would only show Google's "not secure" message, so say what is happening instead
+  wc.once('did-stop-loading', () => {
+    if (wc.isDestroyed()) return;
+    wc.executeJavaScript(`document.body.innerHTML='<div style="font:16px Segoe UI,sans-serif;padding:48px;text-align:center;color:#555">Sign in using the Google window. This page continues when you are done.<br><br>Closed it by mistake? Press the reload button.</div>'`).catch(() => {});
+  });
+  lw.loadURL(url).catch(e => console.error('google login load failed', e && e.message));
+}
+
 app.on('web-contents-created', (_e, wc) => {
+  if (wc.getType() === 'webview') {
+    wc.on('did-start-navigation', (e, u, _inPlace, isMain) => {
+      const url = (e && e.url) || u, main = e && e.isMainFrame !== undefined ? e.isMainFrame : isMain;
+      if (main && /^https?:/i.test(url || '') && isGoogleAuth(url)) { setTimeout(() => { try { openGoogleLogin(wc, url); } catch (err) { console.error('google login failed', err); } }, 50); }
+    });
+  }
   // keep what the page itself can read (navigator.userAgent) in line with the headers above
   if (wc.getType() === 'webview' || wc.getType() === 'window') {
     wc.on('did-start-navigation', (e, u, _inPlace, isMain) => {
