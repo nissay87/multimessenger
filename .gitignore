@@ -1,0 +1,18 @@
+# dependencies and build output
+node_modules/
+dist/
+out/
+
+# logs and OS files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# editor folders
+.vscode/
+.idea/
+
+# local-only data (the app keeps its data in %APPDATA%, but just in case)
+services.json
+settings.json

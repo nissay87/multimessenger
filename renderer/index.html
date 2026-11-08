@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'" />
+  <title>MultiMessenger</title>
+  <script src="theme-init.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="themes.css" />
+</head>
+<body>
+  <div id="app">
+    <nav id="rail" aria-label="Workspaces">
+      <div id="wsList"></div>
+      <button id="wsAdd" class="ws wsadd" title="New workspace">+</button>
+    </nav>
+    <aside id="sidebar">
+      <button id="addBtn" class="item add"><span class="plus">+</span><span class="label">Add service</span></button>
+      <nav id="list"></nav>
+      <div id="footer">
+        <button id="dlBtn" class="item foot" title="Downloads"><span class="plus">⬇</span><span class="label">Downloads</span><span class="dlcount" id="dlCount" hidden></span></button>
+        <button id="settingsBtn" class="item foot" title="App settings"><span class="plus">⚙</span><span class="label">Settings</span></button>
+        <button id="themeBtn" class="item foot" title="Theme and icon size"><span class="plus">🎨</span><span class="label">Appearance</span></button>
+        <button id="resetBtn" class="item foot reset" title="Remove all services and their data"><span class="plus">⟲</span><span class="label">Remove all services</span></button>
+      </div>
+    </aside>
+    <button id="collapse" title="Collapse sidebar">‹</button>
+    <main id="content">
+      <div id="toolbar">
+        <span id="tbTitle">MultiMessenger</span>
+        <span class="spacer"></span>
+        <div class="tbgroup" id="zoomBox">
+          <button class="tb" id="zOut" title="Zoom out (Ctrl and -)">−</button>
+          <button class="tb zval" id="zVal" title="Current zoom. Click for actual size (Ctrl and 0)">100%</button>
+          <button class="tb" id="zIn" title="Zoom in (Ctrl and +)">+</button>
+          <button class="tb" id="zReset" title="Actual size (100%)">Actual size</button>
+        </div>
+        <button class="tb" id="tbVideo" hidden title="Download the video on this page">⬇ Video</button>
+        <button class="tb" id="tbReload" title="Reload (F5)">↻</button>
+        <button class="tb" id="tbDl" title="Downloads">⬇<span class="tbbadge" id="tbDlBadge" hidden></span></button>
+      </div>
+      <div id="views">
+        <div id="empty"></div>
+      </div>
+      <section id="panel" hidden>
+        <div class="panelhead">
+          <h2>Downloads</h2>
+          <span class="spacer"></span>
+          <button class="ghost sm" id="dlOpenDir">Open folder</button>
+          <button class="ghost sm" id="dlChoose">Change folder…</button>
+          <button class="ghost sm" id="dlClear">Clear finished</button>
+          <button class="ghost sm" id="dlClose" title="Close">✕</button>
+        </div>
+        <p class="hint" id="dlDir"></p>
+        <label class="check"><input type="checkbox" id="dlAsk" /> Ask where to save each file</label>
+        <p class="hint">Files from every service are saved here. Right-click an image, video or link inside a service and choose Download.</p>
+        <div id="dlList"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="dlg">
+    <form id="form" method="dialog">
+      <h2 id="dlgTitle">Add service</h2>
+
+      <label>Service
+        <select id="fType"></select>
+      </label>
+      <label>Name
+        <input id="fName" required />
+      </label>
+      <label>URL
+        <input id="fUrl" placeholder="https://example.com" required />
+      </label>
+      <label>Workspace
+        <select id="fWs"></select>
+      </label>
+
+      <fieldset id="proxyBox">
+        <legend>
+          <label class="inline"><input type="checkbox" id="pEnabled" /> Use proxy for this service</label>
+        </legend>
+        <div class="row">
+          <label>Type
+            <select id="pType">
+              <option value="http">HTTP</option>
+              <option value="https">HTTPS</option>
+              <option value="socks4">SOCKS4</option>
+              <option value="socks5">SOCKS5</option>
+            </select>
+          </label>
+          <label class="grow">URL / Host
+            <input id="pHost" placeholder="127.0.0.1" autocomplete="off" spellcheck="false" />
+          </label>
+          <label class="port">Port
+            <input id="pPort" type="text" inputmode="numeric" maxlength="5" placeholder="8080" autocomplete="off" />
+          </label>
+        </div>
+        <div class="row">
+          <label class="grow">Username (optional)
+            <input id="pUser" autocomplete="off" />
+          </label>
+          <label class="grow">Password
+            <input id="pPass" type="password" autocomplete="new-password" />
+          </label>
+        </div>
+        <p class="hint" id="pHint"></p>
+        <div class="row">
+          <button type="button" id="testBtn" class="ghost">Save &amp; test connection</button>
+          <span id="testOut"></span>
+        </div>
+      </fieldset>
+
+      <fieldset id="bgBox">
+        <legend>Background &amp; notifications</legend>
+        <div class="row">
+          <label class="grow">When not in use
+            <select id="bMode">
+              <option value="always">Always on – keep running, receive messages</option>
+              <option value="sleep">Sleep after inactivity – saves memory</option>
+            </select>
+          </label>
+          <label class="port">Minutes
+            <input id="bMin" type="text" inputmode="numeric" maxlength="4" value="10" autocomplete="off" />
+          </label>
+        </div>
+        <label class="inline"><input type="checkbox" id="bMute" /> Mute notifications from this service</label>
+        <p class="hint" id="bHint"></p>
+      </fieldset>
+
+      <fieldset id="dataBox">
+        <legend>Account data</legend>
+        <div class="row">
+          <button type="button" id="cacheBtn" class="ghost">Clear cache</button>
+          <button type="button" id="wipeBtn" class="ghost">Sign out &amp; clear data (new account)</button>
+        </div>
+        <p class="hint">Clear cache keeps you logged in. The second option removes all logins and data of this service only, so you can sign in with another account. Proxy settings are kept.</p>
+      </fieldset>
+
+      <menu>
+        <button type="button" id="delBtn" class="danger">Delete</button>
+        <span class="spacer"></span>
+        <button type="button" id="cancelBtn" class="ghost">Cancel</button>
+        <button type="submit" id="saveBtn" class="primary">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="themeDlg">
+    <h2>Appearance</h2>
+    <label>Theme
+      <select id="themeSel"></select>
+    </label>
+    <label>Sidebar icon size
+      <div class="sizerow">
+        <input id="sizeRange" type="range" min="16" max="64" step="2" value="28" />
+        <span id="sizeVal">28 px</span>
+      </div>
+    </label>
+    <label>Application font
+      <select id="fontSel"></select>
+    </label>
+    <p class="hint" id="fontHint"></p>
+    <label>Font inside chats and websites
+      <select id="chatFontSel"></select>
+    </label>
+    <p class="hint">Changes the text of WhatsApp, Telegram and the other services, for example to Tahoma. Icons and code keep their own font.</p>
+    <p class="hint">Changes apply immediately and are remembered. Themes style the app itself; the websites inside keep their own look.</p>
+    <menu>
+      <button type="button" id="themeReset" class="ghost">Reset</button>
+      <span class="spacer"></span>
+      <button type="button" id="themeClose" class="primary">Done</button>
+    </menu>
+  </dialog>
+
+  <dialog id="setDlg">
+    <h2>Settings</h2>
+    <label class="check"><input type="checkbox" id="setTray" /> Close button (X) hides the app to the tray</label>
+    <p class="hint sub">Minimize always goes to the taskbar. The tray icon is always shown; right-click it to quit.</p>
+    <label class="check"><input type="checkbox" id="setAuto" /> Start MultiMessenger when I sign in to Windows</label>
+    <label class="check sub"><input type="checkbox" id="setHidden" /> …and start minimized to the tray</label>
+    <label class="check"><input type="checkbox" id="setNotif" /> Show desktop notifications for new messages</label>
+    <label class="check"><input type="checkbox" id="setFlash" /> Flash the taskbar button on new messages</label>
+    <label class="check"><input type="checkbox" id="setPin" /> Keep the tray icon visible (not in the hidden ^ area)</label>
+    <p class="hint sub">Applied automatically on Windows 11. On Windows 10, click the ^ arrow and drag the icon onto the taskbar, or <button type="button" id="setTaskbar" class="ghost sm">open taskbar settings</button></p>
+    <p class="hint" id="setHint"></p>
+    <h3 class="sethead">Video downloader</h3>
+    <p class="hint" id="vdStatus"></p>
+    <div class="row">
+      <button type="button" id="vdUpdate" class="ghost sm">Install / update yt-dlp</button>
+      <button type="button" id="vdFfmpeg" class="ghost sm">Install ffmpeg</button>
+      <button type="button" id="vdLocY" class="ghost sm">Locate yt-dlp…</button>
+      <button type="button" id="vdLocF" class="ghost sm">Locate ffmpeg…</button>
+      <button type="button" id="vdLog" class="ghost sm">Open log</button>
+    </div>
+    <p class="hint">Used for the Video button on Instagram, Facebook, YouTube and X. If a site stops working, update yt-dlp.</p>
+    <h3 class="sethead">Speed</h3>
+    <label class="check"><input type="checkbox" id="setSpell" /> Spell checking inside services</label>
+    <p class="hint sub">Turn it off for smoother typing.</p>
+    <label class="check"><input type="checkbox" id="setHw" /> Use hardware acceleration (graphics card)</label>
+    <p class="hint sub">If typing or scrolling still feels slow, or pages flicker, try switching this, then restart.</p>
+    <label class="check"><input type="checkbox" id="setLite" /> Lightweight pages (troubleshooting)</label>
+    <p class="hint sub">Loads service pages with no MultiMessenger scripts inside. Typing is as fast as in a normal browser, but desktop notifications and unread counts from the page stop working. Restart the app after changing this.</p>
+    <button type="button" id="setSleepAll" class="ghost sm">Sleep all background services now</button>
+    <p class="hint">Unloads every service except the one you are using, which frees processor and memory. They reload when you click them.</p>
+    <menu>
+      <button type="button" id="setRestart" class="ghost">Restart app</button>
+      <span class="spacer"></span>
+      <button type="button" id="setClose" class="primary">Done</button>
+    </menu>
+  </dialog>
+
+  <dialog id="vidDlg">
+    <h2>Download video</h2>
+    <div id="vidHead" class="vidhead"><img id="vidThumb" alt="" hidden /><div><div id="vidTitle" class="vidtitle"></div><div id="vidMeta" class="hint"></div></div></div>
+    <p class="hint" id="vidStatus">Loading available qualities…</p>
+    <div id="vidTabs" class="tabs" hidden>
+      <button type="button" class="tabbtn on" data-tab="video">Video</button>
+      <button type="button" class="tabbtn" data-tab="audio">Music (audio only)</button>
+    </div>
+    <div id="vidList" class="vlist"></div>
+    <div id="vidFfmpeg" class="vnote" hidden>
+      <span>Higher video qualities and MP3 need <b>ffmpeg</b>.</span>
+      <button type="button" class="ghost sm" id="vidFfmpegBtn">Install ffmpeg</button>
+    </div>
+    <menu>
+      <span class="spacer"></span>
+      <button type="button" id="vidCancel" class="ghost">Cancel</button>
+      <button type="button" id="vidGo" class="primary" disabled>Download</button>
+    </menu>
+  </dialog>
+
+  <dialog id="toolDlg">
+    <h2 id="toolTitle">Video downloader</h2>
+    <p id="toolText" class="hint"></p>
+    <div class="bar toolbar-bar" id="toolBar" hidden><i id="toolFill" style="width:0"></i></div>
+    <p class="hint" id="toolMsg"></p>
+    <menu>
+      <button type="button" id="toolLocate" class="ghost">Choose file…</button>
+      <span class="spacer"></span>
+      <button type="button" id="toolCancel" class="ghost">Cancel</button>
+      <button type="button" id="toolGo" class="primary">Install</button>
+    </menu>
+  </dialog>
+
+  <div id="toast" hidden></div>
+
+  <dialog id="wsDlg">
+    <h2 id="wsTitle">New workspace</h2>
+    <div id="wsChips" class="chips"></div>
+    <div class="row">
+      <label class="emoji">Icon
+        <input id="wsEmoji" maxlength="4" placeholder="🙂" />
+      </label>
+      <label class="grow">Name
+        <input id="wsName" maxlength="40" placeholder="e.g. Social media" />
+      </label>
+    </div>
+    <label>Color
+      <div id="wsColors" class="swatches"></div>
+    </label>
+    <label>Services in this workspace
+      <div id="wsServices" class="checklist"></div>
+    </label>
+    <p class="hint" id="wsHint"></p>
+    <menu>
+      <button type="button" id="wsDelete" class="danger">Delete</button>
+      <button type="button" id="wsStarter" class="ghost">Create starter workspaces</button>
+      <span class="spacer"></span>
+      <button type="button" id="wsCancel" class="ghost">Cancel</button>
+      <button type="button" id="wsSave" class="primary">Save</button>
+    </menu>
+  </dialog>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

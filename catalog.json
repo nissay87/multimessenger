@@ -1,0 +1,29 @@
+[
+  { "type": "whatsapp",   "group": "Messaging", "name": "WhatsApp",           "url": "https://web.whatsapp.com/",       "color": "#25D366", "letter": "W", "icon": "whatsapp.svg" },
+  { "type": "telegram",   "group": "Messaging", "name": "Telegram",           "url": "https://web.telegram.org/k/",     "color": "#26A5E4", "letter": "T", "icon": "telegram.svg" },
+  { "type": "instagram",  "group": "Messaging", "name": "Instagram",          "url": "https://www.instagram.com/",      "color": "#FF0069", "letter": "I", "icon": "instagram.svg" },
+  { "type": "twitter",    "group": "Messaging", "name": "X (Twitter)",        "url": "https://x.com/",                  "color": "#000000", "letter": "X", "icon": "twitter.svg" },
+  { "type": "facebook",   "group": "Messaging", "name": "Facebook",           "url": "https://www.facebook.com/",       "color": "#0866FF", "letter": "F", "icon": "facebook.svg" },
+  { "type": "messenger",  "group": "Messaging", "name": "Facebook Messenger", "url": "https://www.messenger.com/",      "color": "#0866FF", "letter": "M", "icon": "messenger.svg" },
+  { "type": "discord",    "group": "Messaging", "name": "Discord",            "url": "https://discord.com/app",         "color": "#5865F2", "letter": "D", "icon": "discord.svg" },
+  { "type": "element",    "group": "Messaging", "name": "Element / Matrix",   "url": "https://app.element.io/",         "color": "#0DBD8B", "letter": "E", "icon": "element.svg" },
+
+  { "type": "gmail",      "group": "Work", "name": "Gmail",                   "url": "https://mail.google.com/",        "color": "#EA4335", "letter": "G", "icon": "gmail.svg" },
+  { "type": "googlechat", "group": "Work", "name": "Google Chat",             "url": "https://chat.google.com/",        "color": "#34A853", "letter": "C", "icon": "googlechat.svg" },
+  { "type": "teams",      "group": "Work", "name": "Microsoft Teams",         "url": "https://teams.microsoft.com/",    "color": "#5059C9", "letter": "T" },
+  { "type": "skypeb",     "group": "Work", "name": "Skype for Business",      "url": "https://",                        "color": "#00AFF0", "letter": "S", "needsUrl": true },
+  { "type": "mattermost", "group": "Work", "name": "Mattermost",              "url": "https://",                        "color": "#0058CC", "letter": "M", "icon": "mattermost.svg", "needsUrl": true },
+  { "type": "linkedin",   "group": "Work", "name": "LinkedIn",                "url": "https://www.linkedin.com/",       "color": "#0A66C2", "letter": "in" },
+
+  { "type": "chatgpt",    "group": "AI", "name": "ChatGPT",                   "url": "https://chatgpt.com/",            "color": "#10A37F", "letter": "G" },
+  { "type": "claude",     "group": "AI", "name": "Claude",                    "url": "https://claude.ai/",              "color": "#D97757", "letter": "C", "icon": "claude.svg" },
+  { "type": "gemini",     "group": "AI", "name": "Gemini",                    "url": "https://gemini.google.com/",      "color": "#8E75B2", "letter": "G", "icon": "gemini.svg" },
+  { "type": "grok",       "group": "AI", "name": "Grok",                      "url": "https://grok.com/",               "color": "#111111", "letter": "G" },
+  { "type": "deepseek",   "group": "AI", "name": "DeepSeek",                  "url": "https://chat.deepseek.com/",      "color": "#5786FE", "letter": "D", "icon": "deepseek.svg" },
+  { "type": "glm",        "group": "AI", "name": "GLM (Z.ai)",                "url": "https://chat.z.ai/",              "color": "#2D5BFF", "letter": "Z" },
+  { "type": "perplexity", "group": "AI", "name": "Perplexity",                "url": "https://www.perplexity.ai/",      "color": "#1FB8CD", "letter": "P", "icon": "perplexity.svg" },
+  { "type": "copilot",    "group": "AI", "name": "Microsoft Copilot",         "url": "https://copilot.microsoft.com/",  "color": "#7B61FF", "letter": "C" },
+
+  { "type": "youtube",    "group": "Other", "name": "YouTube",               "url": "https://www.youtube.com/",        "color": "#FF0000", "letter": "Y", "icon": "youtube.svg" },
+  { "type": "custom",     "group": "Other", "name": "Web app (custom URL)",  "url": "https://",                        "color": "#8b5cf6", "letter": "@", "needsUrl": true }
+]

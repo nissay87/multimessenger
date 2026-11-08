@@ -1,0 +1,233 @@
+/* Themes: selected with <html data-theme="...">. Default (no attribute / "dark") lives in styles.css. */
+
+/* ===================== Classic Mac (System 7 / Platinum) ===================== */
+[data-theme="mac"] {
+  --scheme: light;
+  --font: "Geneva", "Chicago", "Lucida Grande", Verdana, sans-serif;
+  --body-bg: #dddddd; --sidebar-bg: #dddddd; --sidebar-text: #000;
+  --hover: #c4c4c4; --active-bg: #000; --active-text: #fff; --active-glow: none;
+  --add-bg: #fff; --item-radius: 0; --icon-radius: 0;
+  --badge-filter: grayscale(1) contrast(1.15); --badge-border: 1px solid #000; --pdot: #006600;
+  --views-radius: 0; --empty-text: #444;
+  --panel-bg: #dddddd; --panel-text: #000; --panel-muted: #222; --panel-border: 2px solid #000; --panel-radius: 0; --panel-shadow: 4px 4px 0 #000; --backdrop: rgba(0,0,0,.35);
+  --input-bg: #fff; --input-text: #000; --input-border: 1px solid #000; --input-radius: 0;
+  --btn-bg: #fff; --btn-text: #000; --btn-border: 1px solid #000; --btn-radius: 8px;
+  --primary-bg: #fff; --primary-text: #000; --danger: #000; --ok: #006600;
+  --collapse-bg: #dddddd; --collapse-text: #000; --focus: #000;
+}
+[data-theme="mac"] #sidebar { background-image: repeating-linear-gradient(0deg, transparent 0 1px, rgba(0,0,0,.07) 1px 2px); border-right: 2px solid #000; }
+[data-theme="mac"] .item.add { border: 1px solid #000; box-shadow: 1px 1px 0 #000; }
+[data-theme="mac"] button.primary { outline: 2px solid #000; outline-offset: 2px; }
+[data-theme="mac"] h2 { margin: -22px -22px 14px; padding: 4px 10px; text-align: center; font-size: 13px; background: repeating-linear-gradient(0deg, #fff 0 2px, #000 2px 3px) center / 100% 11px no-repeat, #ddd; border-bottom: 2px solid #000; }
+
+/* ===================== Windows XP (Luna) ===================== */
+[data-theme="xp"] {
+  --scheme: light;
+  --font: Tahoma, "Segoe UI", Verdana, sans-serif;
+  --body-bg: #245edb; --sidebar-bg: linear-gradient(180deg, #7ba2e7 0%, #6375d6 100%); --sidebar-text: #fff;
+  --hover: rgba(255,255,255,.2); --active-bg: #fff; --active-text: #215dc6; --active-glow: 0 1px 4px rgba(0,0,0,.4);
+  --add-bg: rgba(255,255,255,.28); --item-radius: 3px; --icon-radius: 4px; --pdot: #d6ffd6;
+  --views-radius: 0;
+  --panel-bg: #ece9d8; --panel-text: #000; --panel-muted: #222; --panel-border: 3px solid #0054e3; --panel-radius: 8px 8px 0 0; --panel-shadow: 3px 5px 14px rgba(0,0,0,.55);
+  --input-bg: #fff; --input-text: #000; --input-border: 1px solid #7f9db9; --input-radius: 0;
+  --btn-bg: linear-gradient(#fff, #ecebe5 86%, #d8d0c4); --btn-text: #000; --btn-border: 1px solid #003c74; --btn-radius: 3px;
+  --primary-bg: linear-gradient(#6fc56f, #2f8a2f); --primary-text: #fff; --danger: #c00; --ok: #0a7d0a;
+  --collapse-bg: #3a6bd0; --collapse-text: #fff; --focus: #316ac5;
+}
+[data-theme="xp"] h2 { margin: -22px -22px 14px; padding: 7px 12px; font-size: 14px; color: #fff; text-shadow: 1px 1px #0a1f66; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #3b8cff 0%, #0a5fe0 12%, #0054e3 50%, #0a5fe0 88%, #0042b8 100%); }
+[data-theme="xp"] .item.active .label { text-shadow: none; }
+
+/* ===================== Windows 11 (Mica, light) ===================== */
+[data-theme="win11"] {
+  --scheme: light;
+  --font: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --body-bg: #f3f3f3; --sidebar-bg: #f3f3f3; --sidebar-text: #1b1b1b;
+  --hover: #e8e8e8; --active-bg: #e3e3e3; --active-text: #1b1b1b; --active-glow: none;
+  --add-bg: #fff; --item-radius: 6px; --icon-radius: calc(var(--icon-size) * .22); --pdot: #0f7b0f;
+  --views-radius: 8px 0 0 0; --views-border: 1px solid #dcdcdc; --empty-text: #777;
+  --panel-bg: #fbfbfb; --panel-text: #1b1b1b; --panel-muted: #5d5d5d; --panel-border: 1px solid #d0d0d0; --panel-radius: 8px; --panel-shadow: 0 8px 32px rgba(0,0,0,.28); --backdrop: rgba(0,0,0,.3);
+  --input-bg: #fff; --input-text: #1b1b1b; --input-border: 1px solid #d0d0d0; --input-radius: 4px;
+  --btn-bg: #fdfdfd; --btn-text: #1b1b1b; --btn-border: 1px solid #d0d0d0; --btn-radius: 4px;
+  --primary-bg: #0067c0; --primary-text: #fff; --danger: #c42b1c; --ok: #0f7b0f;
+  --collapse-bg: #e8e8e8; --collapse-text: #444; --focus: #0067c0;
+}
+[data-theme="win11"] .item.add { border: 1px solid #e0e0e0; }
+[data-theme="win11"] .item.active::before { content: ""; position: absolute; left: 0; top: 24%; bottom: 24%; width: 3px; border-radius: 2px; background: #0067c0; }
+
+/* ===================== KDE Plasma (Breeze Dark) ===================== */
+[data-theme="kde"] {
+  --font: "Noto Sans", "Oxygen", "Segoe UI", sans-serif;
+  --body-bg: #232629; --sidebar-bg: #31363b; --sidebar-text: #eff0f1;
+  --hover: rgba(61,174,233,.2); --active-bg: #3daee9; --active-text: #fff; --active-glow: none;
+  --add-bg: #3b4045; --item-radius: 3px; --icon-radius: 4px; --pdot: #27ae60;
+  --views-radius: 0; --empty-text: #7f8c8d;
+  --panel-bg: #31363b; --panel-text: #eff0f1; --panel-muted: #bdc3c7; --panel-border: 1px solid #4d4d4d; --panel-radius: 5px; --panel-shadow: 0 6px 24px rgba(0,0,0,.5);
+  --input-bg: #232629; --input-text: #eff0f1; --input-border: 1px solid #5f656a; --input-radius: 3px;
+  --btn-bg: #3b4045; --btn-text: #eff0f1; --btn-border: 1px solid #5f656a; --btn-radius: 3px;
+  --primary-bg: #3daee9; --primary-text: #fff; --danger: #da4453; --ok: #27ae60;
+  --collapse-bg: #3b4045; --collapse-text: #bdc3c7; --focus: #3daee9;
+}
+[data-theme="kde"] #sidebar { border-right: 1px solid #1d1f22; }
+
+/* ===================== GNOME (Adwaita Dark) ===================== */
+[data-theme="gnome"] {
+  --font: Cantarell, "Adwaita Sans", "Segoe UI", sans-serif;
+  --body-bg: #242424; --sidebar-bg: #303030; --sidebar-text: #ffffff;
+  --hover: rgba(255,255,255,.08); --active-bg: rgba(255,255,255,.14); --active-text: #fff; --active-glow: none;
+  --add-bg: #3d3d3d; --item-radius: 8px; --icon-radius: calc(var(--icon-size) * .25); --pdot: #8ff0a4;
+  --views-radius: 0; --empty-text: #9a9996;
+  --panel-bg: #383838; --panel-text: #fff; --panel-muted: #c0bfbc; --panel-border: 1px solid #1b1b1b; --panel-radius: 14px; --panel-shadow: 0 8px 32px rgba(0,0,0,.6);
+  --input-bg: #2c2c2c; --input-text: #fff; --input-border: 1px solid #1f1f1f; --input-radius: 6px;
+  --btn-bg: #4a4a4a; --btn-text: #fff; --btn-border: 1px solid transparent; --btn-radius: 6px;
+  --primary-bg: #3584e4; --primary-text: #fff; --danger: #ff7b63; --ok: #8ff0a4;
+  --collapse-bg: #3d3d3d; --collapse-text: #c0bfbc; --focus: #78aeed;
+}
+
+/* ===================== Xfce (Greybird) ===================== */
+[data-theme="xfce"] {
+  --scheme: light;
+  --font: "DejaVu Sans", "Droid Sans", "Segoe UI", sans-serif;
+  --body-bg: #cfcfcd; --sidebar-bg: #e8e8e7; --sidebar-text: #333;
+  --hover: #d9d9d7; --active-bg: #5294e2; --active-text: #fff; --active-glow: none;
+  --add-bg: linear-gradient(#fbfbfb, #e1e1e0); --item-radius: 3px; --icon-radius: 4px; --pdot: #2f7d32;
+  --views-radius: 0; --views-border: 0; --empty-text: #666;
+  --panel-bg: #e8e8e7; --panel-text: #333; --panel-muted: #555; --panel-border: 1px solid #9a9a98; --panel-radius: 4px; --panel-shadow: 0 3px 14px rgba(0,0,0,.4); --backdrop: rgba(0,0,0,.35);
+  --input-bg: #fff; --input-text: #333; --input-border: 1px solid #b6b6b3; --input-radius: 3px;
+  --btn-bg: linear-gradient(#fbfbfb, #dcdcda); --btn-text: #333; --btn-border: 1px solid #a8a8a5; --btn-radius: 3px;
+  --primary-bg: linear-gradient(#6ba2e9, #4a86d6); --primary-text: #fff; --danger: #cc3b3b; --ok: #2f7d32;
+  --collapse-bg: #d9d9d7; --collapse-text: #444; --focus: #5294e2;
+}
+[data-theme="xfce"] #sidebar { border-right: 1px solid #a6a6a3; }
+[data-theme="xfce"] .item.add { border: 1px solid #b3b3b0; }
+
+/* ===================== Plan 9 (acme / rio) ===================== */
+[data-theme="plan9"] {
+  --scheme: light;
+  --font: "Lucida Sans Unicode", "Lucida Sans", "Lucida Grande", Verdana, sans-serif;
+  --body-bg: #ffffea; --sidebar-bg: #ffffea; --sidebar-text: #000;
+  --hover: #eaffff; --active-bg: #eeee9e; --active-text: #000; --active-glow: none;
+  --add-bg: #eaffff; --item-radius: 0; --icon-radius: 0; --pdot: #006600;
+  --views-radius: 0; --views-border: 1px solid #8888cc; --empty-text: #555;
+  --panel-bg: #ffffea; --panel-text: #000; --panel-muted: #333; --panel-border: 1px solid #8888cc; --panel-radius: 0; --panel-shadow: none; --backdrop: rgba(0,0,0,.25);
+  --input-bg: #eaffff; --input-text: #000; --input-border: 1px solid #8888cc; --input-radius: 0;
+  --btn-bg: #eaffff; --btn-text: #000; --btn-border: 1px solid #8888cc; --btn-radius: 0;
+  --primary-bg: #9eeeee; --primary-text: #000; --danger: #a00; --ok: #060;
+  --collapse-bg: #eaffff; --collapse-text: #000; --focus: #8888cc;
+}
+[data-theme="plan9"] #sidebar { border-right: 1px solid #8888cc; }
+[data-theme="plan9"] .item.active { border-color: #99994c; }
+[data-theme="plan9"] .item.add { border: 1px solid #8888cc; }
+[data-theme="plan9"] h2 { margin: -22px -22px 14px; padding: 4px 10px; font-size: 13px; background: #eaffff; border-bottom: 1px solid #8888cc; }
+
+/* ===================== MS-DOS (EDIT.COM / VGA) ===================== */
+[data-theme="dos"] {
+  --font: "Perfect DOS VGA 437", "Px437 IBM VGA8", "Lucida Console", Consolas, "Courier New", monospace;
+  --body-bg: #000; --sidebar-bg: #000; --sidebar-text: #aaaaaa;
+  --hover: #0000aa; --hover-text: #fff; --active-bg: #aaaaaa; --active-text: #000; --active-glow: none;
+  --add-bg: #000; --item-radius: 0; --icon-radius: 0; --pdot: #55ff55;
+  --badge-filter: grayscale(1) contrast(1.3); --badge-border: 1px solid #aaaaaa;
+  --views-radius: 0; --views-border: 3px double #aaaaaa; --empty-text: #aaaaaa;
+  --panel-bg: #0000aa; --panel-text: #ffffff; --panel-muted: #55ffff; --panel-border: 3px double #ffffff; --panel-radius: 0; --panel-shadow: 8px 8px 0 rgba(0,0,0,.6); --backdrop: rgba(0,0,0,.7);
+  --input-bg: #000; --input-text: #aaaaaa; --input-border: 1px solid #55ffff; --input-radius: 0;
+  --btn-bg: #aaaaaa; --btn-text: #000; --btn-border: 1px solid #000; --btn-radius: 0;
+  --primary-bg: #55ffff; --primary-text: #000; --danger: #ff5555; --ok: #55ff55;
+  --collapse-bg: #aaaaaa; --collapse-text: #000; --focus: #ffff55;
+}
+[data-theme="dos"] .item.add { border: 1px solid #aaaaaa; }
+[data-theme="dos"] #sidebar { border-right: 3px double #aaaaaa; }
+[data-theme="dos"] .item .label { text-transform: none; }
+[data-theme="dos"] h2 { font-size: 15px; text-align: center; margin-top: -8px; }
+
+/* ===================== 8-bit color (256-colour console look) ===================== */
+[data-theme="bit8"] {
+  --font: "Press Start 2P", "Lucida Console", "Courier New", monospace;
+  --body-bg: #1a1c2c; --sidebar-bg: #1a1c2c; --sidebar-text: #f4f4f4;
+  --hover: #333c57; --active-bg: #3b5dc9; --active-text: #f4f4f4; --active-glow: inset 0 0 0 2px #73eff7;
+  --add-bg: #29366f; --item-border: 2px solid transparent; --item-radius: 0; --icon-radius: 0; --pdot: #a7f070;
+  --badge-filter: contrast(1.25) saturate(1.5); --badge-border: 2px solid #f4f4f4;
+  --views-radius: 0; --views-border: 4px solid #566c86; --empty-text: #94b0c2;
+  --panel-bg: #29366f; --panel-text: #f4f4f4; --panel-muted: #73eff7; --panel-border: 4px solid #f4f4f4; --panel-radius: 0; --panel-shadow: 8px 8px 0 #0e0f19;
+  --input-bg: #1a1c2c; --input-text: #f4f4f4; --input-border: 2px solid #566c86; --input-radius: 0;
+  --btn-bg: #3b5dc9; --btn-text: #fff; --btn-border: 2px solid #f4f4f4; --btn-radius: 0;
+  --primary-bg: #38b764; --primary-text: #1a1c2c; --danger: #ef7d57; --ok: #a7f070;
+  --collapse-bg: #333c57; --collapse-text: #f4f4f4; --focus: #ffcd75;
+}
+[data-theme="bit8"] body, [data-theme="bit8"] dialog { font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+[data-theme="bit8"] .label { font-size: 11px; }
+[data-theme="bit8"] img { image-rendering: pixelated; }
+[data-theme="bit8"] .item.add { border-color: #566c86; }
+
+/* ===================== 2-bit color (4 shades, Game Boy green) ===================== */
+[data-theme="bit2"] {
+  --font: "Courier New", "Lucida Console", monospace;
+  --body-bg: #0f380f; --sidebar-bg: #0f380f; --sidebar-text: #9bbc0f;
+  --hover: #306230; --hover-text: #9bbc0f; --active-bg: #9bbc0f; --active-text: #0f380f; --active-glow: none;
+  --add-bg: #306230; --item-border: 2px solid transparent; --item-radius: 0; --icon-radius: 0; --pdot: #9bbc0f;
+  --badge-filter: grayscale(1) sepia(1) hue-rotate(35deg) saturate(2.5) contrast(1.1); --badge-border: 2px solid #9bbc0f;
+  --views-radius: 0; --views-border: 4px solid #8bac0f; --empty-text: #8bac0f;
+  --panel-bg: #306230; --panel-text: #9bbc0f; --panel-muted: #8bac0f; --panel-border: 4px solid #9bbc0f; --panel-radius: 0; --panel-shadow: 6px 6px 0 #0f380f; --backdrop: rgba(15,56,15,.75);
+  --input-bg: #0f380f; --input-text: #9bbc0f; --input-border: 2px solid #8bac0f; --input-radius: 0;
+  --btn-bg: #8bac0f; --btn-text: #0f380f; --btn-border: 2px solid #0f380f; --btn-radius: 0;
+  --primary-bg: #9bbc0f; --primary-text: #0f380f; --danger: #9bbc0f; --ok: #9bbc0f;
+  --collapse-bg: #306230; --collapse-text: #9bbc0f; --focus: #9bbc0f;
+}
+[data-theme="bit2"] body, [data-theme="bit2"] dialog { font-weight: 700; }
+[data-theme="bit2"] .item.add { border-color: #8bac0f; }
+[data-theme="bit2"] button.danger { text-decoration: underline; }
+
+/* ===================== 16-bit color (SNES RPG menu windows) ===================== */
+[data-theme="bit16"] {
+  --font: "Trebuchet MS", "Segoe UI", sans-serif;
+  --body-bg: #000030; --sidebar-bg: linear-gradient(180deg, #1c1cb0 0%, #000050 100%); --sidebar-text: #ffffff;
+  --hover: rgba(255,255,255,.16); --active-bg: linear-gradient(90deg, rgba(255,255,255,.4), rgba(255,255,255,.04)); --active-text: #fff; --active-glow: none;
+  --add-bg: rgba(255,255,255,.12); --item-border: 2px solid transparent; --item-radius: 6px; --icon-radius: 8px; --pdot: #80ff80;
+  --badge-filter: saturate(1.35); --badge-border: 2px solid #fff;
+  --views-radius: 0; --views-border: 0 solid transparent; --empty-text: #b8c8ff;
+  --panel-bg: linear-gradient(180deg, #2c2cd0, #00004c); --panel-text: #fff; --panel-muted: #c8d8ff; --panel-border: 3px solid #fff; --panel-radius: 8px; --panel-shadow: inset 0 0 0 2px #6a6ae0, 0 0 0 3px #101060, 0 10px 24px rgba(0,0,0,.6);
+  --input-bg: #000040; --input-text: #fff; --input-border: 2px solid #8a8aff; --input-radius: 4px;
+  --btn-bg: linear-gradient(#5a5af0, #2020a0); --btn-text: #fff; --btn-border: 2px solid #fff; --btn-radius: 6px;
+  --primary-bg: linear-gradient(#ffe45a, #e0a000); --primary-text: #3a2400; --danger: #ff8080; --ok: #80ff80;
+  --collapse-bg: #1a1a8c; --collapse-text: #fff; --focus: #ffe45a;
+}
+[data-theme="bit16"] #sidebar, [data-theme="bit16"] dialog { text-shadow: 1px 1px 0 #000; font-weight: 600; }
+[data-theme="bit16"] #sidebar { border-right: 3px solid #fff; }
+[data-theme="bit16"] button.primary { text-shadow: none; }
+[data-theme="bit16"] .item.active::before { content: "▶"; position: absolute; left: 1px; font-size: 8px; color: #ffe45a; }
+
+/* ===================== 32-bit color (true-colour glass) ===================== */
+[data-theme="bit32"] {
+  --font: "Segoe UI", Inter, system-ui, sans-serif;
+  --body-bg: radial-gradient(1200px 700px at 8% 0%, #4a2fb8 0%, transparent 60%), radial-gradient(900px 600px at 100% 100%, #0e7490 0%, transparent 55%), #0a0a1f;
+  --sidebar-bg: linear-gradient(180deg, rgba(60,80,170,.38), rgba(30,16,80,.5)); --sidebar-text: #f5f7ff;
+  --hover: rgba(255,255,255,.12); --active-bg: linear-gradient(135deg, rgba(124,92,255,.6), rgba(0,200,255,.38)); --active-text: #fff;
+  --active-glow: 0 0 22px rgba(0,200,255,.45), inset 0 0 0 1px rgba(255,255,255,.28);
+  --add-bg: rgba(255,255,255,.09); --item-border: 1px solid rgba(255,255,255,.09); --item-radius: 14px; --icon-radius: calc(var(--icon-size) * .32); --pdot: #4dffb0;
+  --views-radius: 18px 0 0 18px; --empty-text: #a9b4e0;
+  --panel-bg: rgba(26,22,64,.86); --panel-blur: 22px; --panel-text: #f5f7ff; --panel-muted: #b6c0ec; --panel-border: 1px solid rgba(255,255,255,.22); --panel-radius: 18px; --panel-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 40px rgba(124,92,255,.28);
+  --input-bg: rgba(255,255,255,.08); --input-text: #fff; --input-border: 1px solid rgba(255,255,255,.2); --input-radius: 10px;
+  --btn-bg: rgba(255,255,255,.12); --btn-text: #fff; --btn-border: 1px solid rgba(255,255,255,.22); --btn-radius: 10px;
+  --primary-bg: linear-gradient(135deg, #7c5cff, #00c8ff); --primary-text: #fff; --danger: #ff7a9c; --ok: #4dffb0;
+  --collapse-bg: rgba(255,255,255,.14); --collapse-text: #fff; --focus: #00c8ff;
+}
+[data-theme="bit32"] #sidebar { backdrop-filter: blur(18px); }
+[data-theme="bit32"] .badge { box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+
+/* ===================== High contrast ===================== */
+[data-theme="hc"] {
+  --body-bg: #000; --sidebar-bg: #000; --sidebar-text: #fff;
+  --hover: #000; --hover-text: #ffff00; --active-bg: #ffff00; --active-text: #000; --active-glow: none;
+  --add-bg: #000; --item-border: 2px solid #fff; --item-radius: 0; --icon-radius: 4px; --pdot: #00ff00;
+  --badge-border: 2px solid #fff;
+  --views-radius: 0; --views-border: 3px solid #fff; --empty-text: #fff;
+  --panel-bg: #000; --panel-text: #fff; --panel-muted: #fff; --panel-border: 3px solid #fff; --panel-radius: 0; --panel-shadow: none; --backdrop: rgba(0,0,0,.85);
+  --input-bg: #000; --input-text: #fff; --input-border: 2px solid #fff; --input-radius: 0;
+  --btn-bg: #000; --btn-text: #fff; --btn-border: 2px solid #fff; --btn-radius: 0;
+  --primary-bg: #ffff00; --primary-text: #000; --danger: #ff8080; --ok: #00ff00;
+  --collapse-bg: #000; --collapse-text: #fff; --focus: #1aebff;
+}
+[data-theme="hc"] :focus-visible { outline: 3px solid #1aebff; outline-offset: 2px; }
+[data-theme="hc"] .item:hover { border-color: #ffff00; }
+[data-theme="hc"] #sidebar { border-right: 3px solid #fff; }
+[data-theme="hc"] #collapse { border: 2px solid #fff; border-left: 0; }
+[data-theme="hc"] button.primary { border-color: #ffff00; }
+[data-theme="hc"] .hint, [data-theme="hc"] label { color: #fff; }

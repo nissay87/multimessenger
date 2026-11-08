@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MultiMessenger: all your messengers in one window</title>
+  <meta name="author" content="nissay87" />
+  <meta name="description" content="MultiMessenger is a free desktop app that puts WhatsApp, Telegram, Gmail, Discord, ChatGPT and 20 more services in one sidebar. Each service has its own login and its own proxy (HTTP, HTTPS, SOCKS4, SOCKS5)." />
+  <meta name="theme-color" content="#0d0d12" />
+  <link rel="icon" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/icon-256.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rail: #0d0d12;
+      --rail-text: #eceef8;
+      --rail-muted: #9a9db8;
+      --rail-hover: #181822;
+      --rail-active: #2a2540;
+      --paper: #f1f3fa;
+      --panel: #ffffff;
+      --ink: #181b3a;
+      --muted: #565b7e;
+      --line: #dadfee;
+      --violet: #6d4aff;
+      --violet-dark: #5636e0;
+      --cyan: #7de2ff;
+      --code-bg: #14141c;
+      --code-text: #e8eaff;
+      --head: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+      --body: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+      --rail-w: 244px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; background: var(--rail); color: var(--ink); font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--violet-dark); text-underline-offset: 3px; }
+    a:hover { color: var(--violet); }
+    :focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; border-radius: 6px; }
+
+    /* ---------- rail: the same sidebar as the app ---------- */
+    .rail { position: fixed; inset: 0 auto 0 0; width: var(--rail-w); padding: 14px 10px; display: flex; flex-direction: column; gap: 4px; color: var(--rail-text); overflow-y: auto; }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 6px 10px 18px; color: var(--rail-text); text-decoration: none; font: 700 19px/1.1 var(--head); letter-spacing: -.01em; }
+    .brand img { width: 36px; height: 36px; border-radius: 9px; }
+    .rail a.item { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; color: var(--rail-text); text-decoration: none; font-weight: 600; font-size: 15px; }
+    .rail a.item:hover { background: var(--rail-hover); color: #fff; }
+    .rail a.item[aria-current="true"] { background: var(--rail-active); box-shadow: 0 0 18px rgba(109, 74, 255, .28); }
+    .badge { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; flex: none; font: 800 13px/1 var(--body); color: #fff; overflow: hidden; }
+    .badge img { width: 64%; height: 64%; }
+    .badge.app img { width: 100%; height: 100%; }
+    .tag { margin-left: auto; font-size: 10px; font-weight: 700; color: #34d399; border: 1px solid #34d39966; border-radius: 6px; padding: 0 5px; }
+    .rail .spacer { flex: 1; min-height: 12px; }
+    .rail a.item.foot { font-weight: 500; font-size: 14px; color: var(--rail-muted); padding-top: 7px; padding-bottom: 7px; }
+    .rail a.item.foot:hover { color: #fff; }
+
+    /* ---------- content panel ---------- */
+    .panel { margin-left: var(--rail-w); min-height: 100vh; background: var(--paper); border-radius: 18px 0 0 18px; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 48px; }
+    section { padding: 72px 0; border-top: 1px solid var(--line); }
+    section:first-of-type { border-top: 0; padding-top: 64px; }
+
+    h1, h2, h3 { font-family: var(--head); color: var(--ink); margin: 0; }
+    h1 { font-size: clamp(2.3rem, 4.6vw, 3.7rem); line-height: 1.04; letter-spacing: -.025em; font-weight: 700; max-width: 17ch; }
+    h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); line-height: 1.12; letter-spacing: -.02em; font-weight: 700; max-width: 22ch; }
+    h3 { font-size: 1.1rem; font-weight: 700; letter-spacing: -.005em; }
+    p { margin: 0 0 1em; max-width: 62ch; }
+    .lede { font-size: 1.15rem; color: var(--muted); max-width: 56ch; margin-top: 20px; }
+    .sub { color: var(--muted); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0 14px; align-items: center; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 20px; border-radius: 11px; font: 700 16px/1 var(--body); text-decoration: none; border: 1.5px solid transparent; cursor: pointer; }
+    .btn.primary { background: var(--violet); color: #fff; }
+    .btn.primary:hover { background: var(--violet-dark); color: #fff; }
+    .btn.ghost { border-color: var(--ink); color: var(--ink); background: transparent; }
+    .btn.ghost:hover { background: var(--ink); color: #fff; }
+    .fine { font-size: 14px; color: var(--muted); max-width: 64ch; }
+    #assets { font-size: 14px; color: var(--muted); display: none; margin-top: 4px; }
+    #assets a { margin-right: 14px; }
+
+    .shot { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; }
+    .hero-shot { margin-top: 44px; box-shadow: 0 24px 60px rgba(24, 27, 58, .18); border-color: #c9cfe6; }
+    figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; }
+    figure { margin: 0; }
+
+    /* services */
+    .groups { margin-top: 34px; display: grid; gap: 0; border-top: 1px solid var(--line); }
+    .group { display: grid; grid-template-columns: 130px 1fr; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: start; }
+    .group h3 { padding-top: 4px; font-size: 1rem; color: var(--muted); font-weight: 600; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0; padding: 0; list-style: none; }
+    .chips li { display: inline-flex; align-items: center; gap: 9px; font-weight: 600; font-size: 16px; }
+    .chips .badge { width: 26px; height: 26px; font-size: 12px; border-radius: 7px; }
+
+    /* two-column feature layouts */
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 48px; align-items: start; margin-top: 30px; }
+    .split .lede { margin-top: 0; }
+    .split.flip { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); }
+    ul.plain { padding-left: 1.1em; margin: 0 0 1em; max-width: 60ch; }
+    ul.plain li { margin-bottom: .6em; }
+    dl.rows { margin: 0; }
+    dl.rows div { padding: 16px 0; border-top: 1px solid var(--line); }
+    dl.rows div:last-child { border-bottom: 1px solid var(--line); }
+    dl.rows dt { font: 700 1.05rem/1.3 var(--head); margin-bottom: 4px; }
+    dl.rows dd { margin: 0; color: var(--muted); max-width: 54ch; }
+    .stack { display: grid; gap: 22px; }
+
+    .theme-grid { margin-top: 30px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px 18px; }
+    .theme-grid img { border: 1px solid var(--line); border-radius: 12px; width: 100%; }
+    .theme-grid figcaption { margin-top: 8px; font-weight: 600; color: var(--ink); }
+    .theme-names { margin-top: 20px; color: var(--muted); max-width: 80ch; }
+
+    /* run it */
+    ol.steps { list-style: none; counter-reset: s; margin: 30px 0 0; padding: 0; display: grid; gap: 26px; }
+    ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 38px 1fr; gap: 16px; }
+    ol.steps > li::before { content: counter(s); width: 38px; height: 38px; border-radius: 10px; background: var(--ink); color: #fff; display: grid; place-items: center; font: 700 17px var(--head); }
+    ol.steps h3 { margin: 6px 0 6px; }
+    pre { position: relative; margin: 10px 0 0; padding: 16px 64px 16px 18px; background: var(--code-bg); color: var(--code-text); border-radius: 12px; overflow-x: auto; font: 14px/1.7 ui-monospace, "Cascadia Code", Consolas, monospace; max-width: 100%; }
+    pre .c { color: #8c91b8; }
+    .copy { position: absolute; top: 10px; right: 10px; border: 1px solid #3a3d5c; background: #20223a; color: #dfe2ff; border-radius: 8px; font: 600 12px var(--body); padding: 6px 10px; cursor: pointer; }
+    .copy:hover { background: #2c2f52; }
+    code.i { font: 0.92em ui-monospace, Consolas, monospace; background: #e6e9f6; padding: 2px 6px; border-radius: 6px; }
+
+    details { border-top: 1px solid var(--line); padding: 4px 0; }
+    details:last-of-type { border-bottom: 1px solid var(--line); }
+    summary { cursor: pointer; padding: 14px 0; font: 700 1.05rem/1.3 var(--head); list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font: 400 24px/1 var(--body); color: var(--muted); }
+    details[open] summary::after { content: "\2212"; }
+    details p { color: var(--muted); margin-bottom: 16px; }
+    .faq { margin-top: 28px; }
+
+    footer { padding: 36px 0 64px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+    footer p { max-width: 80ch; }
+
+    /* ---------- small screens: the rail becomes a top bar ---------- */
+    @media (max-width: 920px) {
+      .rail { position: sticky; top: 0; inset: auto; width: 100%; flex-direction: row; align-items: center; gap: 4px; padding: 8px 10px; z-index: 10; overflow-x: auto; overflow-y: hidden; }
+      .brand { padding: 0 10px 0 4px; flex: none; }
+      .brand { display: none; }
+      .rail a.item { flex: none; padding: 6px 10px; }
+      .rail a.item .tag, .rail .spacer, .rail a.item.foot { display: none; }
+      .panel { margin-left: 0; border-radius: 18px 18px 0 0; }
+      .wrap { padding: 0 20px; }
+      section { padding: 52px 0; }
+      .split, .split.flip { grid-template-columns: 1fr; gap: 28px; }
+      .group { grid-template-columns: 1fr; gap: 8px; }
+      .theme-grid { grid-template-columns: repeat(2, 1fr); }
+      html { scroll-padding-top: 76px; }
+    }
+    @media (max-width: 520px) {
+      body { font-size: 16px; }
+      .rail a.item span.t { display: none; }
+      .rail a.item[aria-current="true"] span.t { display: inline; }
+      pre { font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <aside class="rail" aria-label="Page sections">
+    <a class="brand" href="#download"><img src="assets/icon-256.png" alt="" width="36" height="36" /><span>MultiMessenger</span></a>
+    <a class="item" href="#download" aria-current="true"><span class="badge app"><img src="assets/favicon.png" alt="" /></span><span class="t">Download</span></a>
+    <a class="item" href="#services"><span class="badge" style="background:#25D366"><img src="assets/icons/whatsapp.svg" alt="" /></span><span class="t">Services</span></a>
+    <a class="item" href="#proxies"><span class="badge" style="background:#1FB8CD">P</span><span class="t">Proxies</span><span class="tag">SOCKS5</span></a>
+    <a class="item" href="#stay-connected"><span class="badge" style="background:#26A5E4"><img src="assets/icons/telegram.svg" alt="" /></span><span class="t">Stay connected</span></a>
+    <a class="item" href="#tools"><span class="badge" style="background:#FF0000">&#9660;</span><span class="t">Workspaces &amp; downloads</span></a>
+    <a class="item" href="#themes"><span class="badge" style="background:#8E75B2"><img src="assets/icons/gemini.svg" alt="" /></span><span class="t">Themes</span></a>
+    <a class="item" href="#run"><span class="badge" style="background:#0A66C2">&gt;_</span><span class="t">Run from source</span></a>
+    <a class="item" href="#faq"><span class="badge" style="background:#5865F2">?</span><span class="t">Questions</span></a>
+    <div class="spacer"></div>
+    <a class="item foot" data-href="" href="https://github.com/nissay87/MultiMessenger"><span class="badge" style="background:#24292f">&lt;/&gt;</span><span class="t">Source on GitHub</span></a>
+    <a class="item foot" data-href="/releases" href="https://github.com/nissay87/MultiMessenger"><span class="badge" style="background:#3b3f55">v</span><span class="t">All releases</span></a>
+  </aside>
+
+  <div class="panel">
+    <div class="wrap">
+
+      <section id="download">
+        <h1>All your messengers in one window, each with its own proxy</h1>
+        <p class="lede">MultiMessenger puts WhatsApp, Telegram, Gmail, Discord, ChatGPT and more than twenty other services in one sidebar. Every service keeps its own login, and you decide which ones go through a proxy.</p>
+        <div class="actions">
+          <a class="btn primary" id="dl" data-href="/releases/latest" href="https://github.com/nissay87/MultiMessenger">Download for Windows</a>
+          <a class="btn ghost" data-href="" href="https://github.com/nissay87/MultiMessenger">View the source on GitHub</a>
+        </div>
+        <div id="assets"></div>
+        <p class="fine">Free and open source (MIT). Windows 10 and 11. Windows may show a SmartScreen warning because the app is not code-signed; see the questions below.</p>
+        <figure class="hero-shot shot">
+          <img src="assets/app.png" width="1280" height="820" alt="MultiMessenger window. A dark sidebar lists WhatsApp, Telegram, Instagram, X, Gmail, Discord and other services, with red unread counts and small proxy tags such as SOCKS5 and HTTP. The selected service opens on the right." />
+        </figure>
+      </section>
+
+      <section id="services">
+        <h2>Every service you use, in one sidebar</h2>
+        <p class="lede">Pick a service from the list and sign in. Each one runs in its own isolated session, so you can add the same service twice and use two accounts side by side.</p>
+        <div class="groups">
+          <div class="group"><h3>Messaging and social</h3><ul class="chips"><li><span class="badge" style="background:#25D366"><img src="assets/icons/whatsapp.svg" alt="" /></span>WhatsApp</li><li><span class="badge" style="background:#26A5E4"><img src="assets/icons/telegram.svg" alt="" /></span>Telegram</li><li><span class="badge" style="background:#FF0069"><img src="assets/icons/instagram.svg" alt="" /></span>Instagram</li><li><span class="badge" style="background:#000000"><img src="assets/icons/twitter.svg" alt="" /></span>X (Twitter)</li><li><span class="badge" style="background:#0866FF"><img src="assets/icons/facebook.svg" alt="" /></span>Facebook</li><li><span class="badge" style="background:#0866FF"><img src="assets/icons/messenger.svg" alt="" /></span>Facebook Messenger</li><li><span class="badge" style="background:#5865F2"><img src="assets/icons/discord.svg" alt="" /></span>Discord</li><li><span class="badge" style="background:#0DBD8B"><img src="assets/icons/element.svg" alt="" /></span>Element / Matrix</li></ul></div>
+          <div class="group"><h3>Work</h3><ul class="chips"><li><span class="badge" style="background:#EA4335"><img src="assets/icons/gmail.svg" alt="" /></span>Gmail</li><li><span class="badge" style="background:#34A853"><img src="assets/icons/googlechat.svg" alt="" /></span>Google Chat</li><li><span class="badge" style="background:#5059C9">T</span>Microsoft Teams</li><li><span class="badge" style="background:#00AFF0">S</span>Skype for Business</li><li><span class="badge" style="background:#0058CC"><img src="assets/icons/mattermost.svg" alt="" /></span>Mattermost</li><li><span class="badge" style="background:#0A66C2">in</span>LinkedIn</li></ul></div>
+          <div class="group"><h3>AI assistants</h3><ul class="chips"><li><span class="badge" style="background:#10A37F">G</span>ChatGPT</li><li><span class="badge" style="background:#D97757"><img src="assets/icons/claude.svg" alt="" /></span>Claude</li><li><span class="badge" style="background:#8E75B2"><img src="assets/icons/gemini.svg" alt="" /></span>Gemini</li><li><span class="badge" style="background:#111111">G</span>Grok</li><li><span class="badge" style="background:#5786FE"><img src="assets/icons/deepseek.svg" alt="" /></span>DeepSeek</li><li><span class="badge" style="background:#2D5BFF">Z</span>GLM (Z.ai)</li><li><span class="badge" style="background:#1FB8CD"><img src="assets/icons/perplexity.svg" alt="" /></span>Perplexity</li><li><span class="badge" style="background:#7B61FF">C</span>Microsoft Copilot</li></ul></div>
+          <div class="group"><h3>Video</h3><ul class="chips"><li><span class="badge" style="background:#FF0000"><img src="assets/icons/youtube.svg" alt="" /></span>YouTube</li></ul></div>
+        </div>
+        <p class="fine" style="margin-top:18px">Anything else works too: choose <strong>Web app (custom URL)</strong>, type the address, and it gets its own login, icon and proxy like the others. Skype for Business and Mattermost ask for your organization's server address.</p>
+      </section>
+
+      <section id="proxies">
+        <h2>A proxy for each service, not for the whole computer</h2>
+        <div class="split">
+          <div>
+            <p class="lede" style="margin-top:20px">Send WhatsApp through one server, leave Gmail on your normal connection, and put Instagram on a different one. Each service has its own switch.</p>
+            <ul class="plain">
+              <li>Choose <strong>HTTP, HTTPS, SOCKS4 or SOCKS5</strong>, then type the address and port, for example <code class="i">127.0.0.1</code> and <code class="i">8080</code>.</li>
+              <li>Add a username and password when the proxy needs one. This works for every type, SOCKS4 included.</li>
+              <li><strong>Save &amp; test connection</strong> shows the IP address the service really uses, so you know the proxy is working.</li>
+              <li>Proxy passwords are stored encrypted with Windows.</li>
+              <li>Services with the proxy switched off connect directly. A small tag in the sidebar shows which ones use a proxy.</li>
+            </ul>
+            <p class="sub">Need a second account? Add the service again, or open its settings and choose <strong>Sign out &amp; clear data</strong> to start fresh. Proxy settings are kept.</p>
+          </div>
+          <figure class="shot"><img src="assets/dialog.png" width="520" height="922" alt="Service settings dialog with Use proxy for this service ticked, SOCKS5 selected, host 127.0.0.1, port 1080, username and password fields, and sections for background behaviour and account data." loading="lazy" /></figure>
+        </div>
+      </section>
+
+      <section id="stay-connected">
+        <h2>It keeps running, and tells you when something arrives</h2>
+        <div class="split flip">
+          <div class="stack">
+            <figure class="shot"><img src="assets/background.png" width="474" height="173" alt="Background and notifications settings: When not in use is set to sleep after inactivity, 10 minutes, with a mute notifications checkbox." loading="lazy" /></figure>
+            <figure class="shot"><img src="assets/settings.png" width="460" height="330" alt="Settings dialog with options for hiding to the tray on close, starting with Windows, notifications and taskbar flashing." loading="lazy" /></figure>
+          </div>
+          <dl class="rows">
+            <div><dt>Real notifications</dt><dd>A website's own notifications appear as Windows notifications, with the service name in the title. Click one and MultiMessenger opens that service and chat.</dd></div>
+            <div><dt>Unread counts</dt><dd>Red numbers show on the sidebar, on the taskbar icon and in the tray tooltip. You can mute any service.</dd></div>
+            <div><dt>Taskbar and tray</dt><dd>Minimize sends the window to the taskbar. Closing it hides the app in the tray, whose icon is always visible. Right-click the icon to quit.</dd></div>
+            <div><dt>Always on, or asleep</dt><dd>Always on keeps a service loaded so messages keep arriving. Sleep unloads it after the minutes you choose to save memory, and wakes it when you click. A sleeping service cannot send notifications.</dd></div>
+            <div><dt>Start with Windows</dt><dd>Optional. It can start minimized in the tray, so your services are ready when you sit down.</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section id="tools">
+        <h2>Workspaces, zoom and a video downloader</h2>
+        <div class="split">
+          <dl class="rows">
+            <div><dt>Workspaces</dt><dd>Group your services into Social media, AI, Mail, Work or anything you like, and switch with one click. Unread counts are added up for each workspace.</dd></div>
+            <div><dt>Zoom for every service</dt><dd>Zoom in, zoom out or return to actual size with Ctrl + / Ctrl - / Ctrl 0 or Ctrl + mouse wheel. Each service remembers its own zoom.</dd></div>
+            <div><dt>Video downloader</dt><dd>On YouTube pick the exact quality you want (every resolution the video has, plus MP3 and audio). On Instagram and Facebook download a video with one click. Each video is saved as an MP4, and the MKV is kept next to it.</dd></div>
+            <div><dt>One Downloads section</dt><dd>Every file from every service lands in one list, with progress, pause, cancel, retry, open and show in folder.</dd></div>
+            <div><dt>Smooth typing</dt><dd>Options to turn off spell checking, sleep background services and lower their priority keep typing smooth, even with many services open.</dd></div>
+          </dl>
+          <div class="stack">
+            <figure class="shot"><img src="assets/workspaces.png" width="296" height="500" alt="Workspace bar on the far left with Social media, AI and Mail workspaces." loading="lazy" /></figure>
+          </div>
+        </div>
+        <figure class="shot" style="margin-top:22px"><img src="assets/downloads.png" width="984" height="404" alt="Downloads list showing finished video downloads with their quality, size and an open button." loading="lazy" /></figure>
+      </section>
+
+      <section id="themes">
+        <h2>Fourteen themes, and sidebar icons at the size you like</h2>
+        <p class="lede">Open <strong>Appearance</strong> to switch theme and drag the icon size from 16 to 64 pixels. Changes apply at once and are remembered.</p>
+        <div class="theme-grid"><figure><img src="assets/theme_xp.png" width="300" height="560" alt="Sidebar in the Windows XP theme" loading="lazy" /><figcaption>Windows XP</figcaption></figure><figure><img src="assets/theme_mac.png" width="300" height="560" alt="Sidebar in the Classic Mac theme" loading="lazy" /><figcaption>Classic Mac</figcaption></figure><figure><img src="assets/theme_win11.png" width="300" height="560" alt="Sidebar in the Windows 11 theme" loading="lazy" /><figcaption>Windows 11</figcaption></figure><figure><img src="assets/theme_kde.png" width="300" height="560" alt="Sidebar in the KDE Plasma theme" loading="lazy" /><figcaption>KDE Plasma</figcaption></figure><figure><img src="assets/theme_gnome.png" width="300" height="560" alt="Sidebar in the GNOME theme" loading="lazy" /><figcaption>GNOME</figcaption></figure><figure><img src="assets/theme_dos.png" width="300" height="560" alt="Sidebar in the MS-DOS style theme" loading="lazy" /><figcaption>MS-DOS style</figcaption></figure><figure><img src="assets/theme_bit32.png" width="300" height="560" alt="Sidebar in the 32-bit color theme" loading="lazy" /><figcaption>32-bit color</figcaption></figure><figure><img src="assets/theme_hc.png" width="300" height="560" alt="Sidebar in the High contrast theme" loading="lazy" /><figcaption>High contrast</figcaption></figure></div>
+        <p class="theme-names">There are also Dark (the default), Xfce, Plan 9, and 2-bit, 8-bit and 16-bit color. Themes restyle the app itself; the websites inside keep their own look.</p>
+      </section>
+
+      <section id="run">
+        <h2>Run it from source</h2>
+        <p class="lede">You need <a href="https://nodejs.org/">Node.js</a> (current LTS) and <a href="https://git-scm.com/">Git</a>.</p>
+        <ol class="steps">
+          <li>
+            <div>
+              <h3>Get the code and install</h3>
+              <pre><code><span class="c"># download the project</span>
+git clone <span data-repo-text>https://github.com/nissay87/MultiMessenger.git</span>
+cd <span data-repo-name>multimessenger</span>
+npm install</code><button class="copy" type="button">Copy</button></pre>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h3>Finish Electron's install if npm blocked it</h3>
+              <p class="sub">Newer npm versions block Electron's download step. If <code class="i">npm start</code> says Electron failed to install, run these two commands once:</p>
+              <pre><code>npm install-scripts approve electron
+node node_modules\electron\install.js</code><button class="copy" type="button">Copy</button></pre>
+              <p class="fine" style="margin-top:10px">If the download stalls, your network may be blocking GitHub. Set <code class="i">ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/</code> first and run the second command again.</p>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h3>Start the app</h3>
+              <pre><code>npm start</code><button class="copy" type="button">Copy</button></pre>
+            </div>
+          </li>
+        </ol>
+        <h3 style="margin-top:44px">Build your own .exe</h3>
+        <p class="sub" style="margin-top:6px">Open the terminal as Administrator, or turn on Developer Mode in Windows, so the build tool can unpack its helpers. Files appear in the <code class="i">dist</code> folder.</p>
+        <pre><code>npm run dist            <span class="c"># installer (.exe)</span>
+npm run dist:portable   <span class="c"># single portable .exe</span>
+npm run dist:msi        <span class="c"># .msi installer</span></code><button class="copy" type="button">Copy</button></pre>
+      </section>
+
+      <section id="faq">
+        <h2>Questions</h2>
+        <div class="faq">
+          <details><summary>Is it free?</summary><p>Yes. MultiMessenger is open source under the MIT license. You can read, change and share the code.</p></details>
+          <details><summary>Where do my logins and messages go?</summary><p>Each service is the real website running in its own Chromium session on your computer. Logins, cookies and settings are stored locally in <code class="i">%APPDATA%\multi-messenger</code>. MultiMessenger has no accounts, no analytics and no server of its own. The only request it makes for itself is the exit-IP check, when you press <strong>Save &amp; test connection</strong>.</p></details>
+          <details><summary>Why does Windows say "Windows protected your PC"?</summary><p>The installer is not code-signed, because a signing certificate costs money. Choose <strong>More info</strong>, then <strong>Run anyway</strong>. If you prefer, build the app yourself from the source with the steps above.</p></details>
+          <details><summary>A website says my browser is unsupported or blocks sign-in.</summary><p>Google and Facebook sometimes distrust embedded browsers. The app presents itself as normal Chrome, which usually works, but a provider can still refuse sign-in. This is outside the app's control.</p></details>
+          <details><summary>Does it run on macOS or Linux?</summary><p>Windows is the supported system. The code is Electron, so it can run from source elsewhere, but tray icons, taskbar badges and start-at-login are designed for Windows and have not been tested on other systems.</p></details>
+          <details><summary>Is it affiliated with WhatsApp, Telegram, Google, Microsoft or the other services?</summary><p>No. MultiMessenger is an independent project. Service names and logos belong to their owners and are used only to identify the services. Logos come from the <a href="https://simpleicons.org/">Simple Icons</a> project.</p></details>
+        </div>
+      </section>
+
+      <footer>
+        <p><strong>MultiMessenger</strong> is made by <a href="https://github.com/nissay87">nissay87</a>. It is released under the MIT license. Read the <a data-href="" href="https://github.com/nissay87/MultiMessenger">source code</a> or <a data-href="/issues" href="https://github.com/nissay87/MultiMessenger">report a problem</a>.</p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+      var user = m ? m[1] : 'nissay87';
+      var seg = location.pathname.split('/').filter(Boolean)[0] || '';
+      var repo = m ? (seg && !/\.html?$/.test(seg) ? seg : user + '.github.io') : 'MultiMessenger';
+      var base = 'https://github.com/' + user + '/' + repo;
+
+      document.querySelectorAll('[data-href]').forEach(function (a) { a.href = base + a.getAttribute('data-href'); });
+      document.querySelectorAll('[data-repo-text]').forEach(function (e) { e.textContent = base + '.git'; });
+      document.querySelectorAll('[data-repo-name]').forEach(function (e) { e.textContent = repo; });
+
+      // Point the download button at the newest release, when there is one
+      if (m) {
+        fetch('https://api.github.com/repos/' + user + '/' + repo + '/releases/latest')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (rel) {
+            if (!rel || !rel.assets || !rel.assets.length) return;
+            var exe = rel.assets.filter(function (a) { return /\.exe$/i.test(a.name); });
+            var main = exe.filter(function (a) { return /setup/i.test(a.name); })[0] || exe[0] || rel.assets[0];
+            var btn = document.getElementById('dl');
+            btn.href = main.browser_download_url;
+            btn.textContent = 'Download ' + (rel.tag_name || '') + ' for Windows';
+            var others = rel.assets.filter(function (a) { return a !== main; });
+            if (others.length) {
+              var box = document.getElementById('assets');
+              box.style.display = 'block';
+              box.appendChild(document.createTextNode('Also available: '));
+              others.forEach(function (a) {
+                var l = document.createElement('a'); l.href = a.browser_download_url; l.textContent = a.name; box.appendChild(l);
+              });
+            }
+          }).catch(function () {});
+      }
+
+      // Copy buttons
+      document.querySelectorAll('pre .copy').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var code = b.parentNode.querySelector('code').innerText;
+          var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600); };
+          if (navigator.clipboard) navigator.clipboard.writeText(code).then(done, function () {});
+        });
+      });
+
+      // Highlight the current section in the rail
+      var links = {};
+      document.querySelectorAll('.rail a.item[href^="#"]').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (!en.isIntersecting) return;
+            Object.keys(links).forEach(function (k) { links[k].removeAttribute('aria-current'); });
+            if (links[en.target.id]) links[en.target.id].setAttribute('aria-current', 'true');
+          });
+        }, { rootMargin: '-35% 0px -60% 0px' });
+        document.querySelectorAll('section[id]').forEach(function (s) { io.observe(s); });
+      }
+    })();
+  </script>
+</body>
+</html>
