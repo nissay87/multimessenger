@@ -166,6 +166,7 @@
     <a class="item" href="#proxies"><span class="badge" style="background:#1FB8CD">P</span><span class="t">Proxies</span><span class="tag">SOCKS5</span></a>
     <a class="item" href="#stay-connected"><span class="badge" style="background:#26A5E4"><img src="assets/icons/telegram.svg" alt="" /></span><span class="t">Stay connected</span></a>
     <a class="item" href="#tools"><span class="badge" style="background:#FF0000">&#9660;</span><span class="t">Workspaces &amp; downloads</span></a>
+    <a class="item" href="#login-import"><span class="badge" style="background:#F59E0B">&#128273;</span><span class="t">Login import</span></a>
     <a class="item" href="#themes"><span class="badge" style="background:#8E75B2"><img src="assets/icons/gemini.svg" alt="" /></span><span class="t">Themes</span></a>
     <a class="item" href="#run"><span class="badge" style="background:#0A66C2">&gt;_</span><span class="t">Run from source</span></a>
     <a class="item" href="#faq"><span class="badge" style="background:#5865F2">?</span><span class="t">Questions</span></a>
@@ -253,6 +254,20 @@
           </div>
         </div>
         <figure class="shot" style="margin-top:22px"><img src="assets/downloads.png" width="984" height="404" alt="Downloads list showing finished video downloads with their quality, size and an open button." loading="lazy" /></figure>
+      </section>
+
+      <section id="login-import">
+        <h2>Google or X won't let you sign in? Import your login</h2>
+        <p class="lede">Google (Gmail, YouTube) and X refuse to show their sign-in page inside any desktop app. MultiMessenger gets around the sign-in page: sign in with your normal browser, export that site's cookies, and import them.</p>
+        <ol class="steps">
+          <li><div><h3>Sign in in your normal browser</h3><p class="sub">Use Chrome, Edge, Brave or Firefox, and open the website you want, for example x.com.</p></div></li>
+          <li><div><h3>Export the cookies</h3><p class="sub">Install a cookie-export extension and click it while you are on that website. It saves a <code class="i">.json</code> file.</p>
+            <ul class="plain"><li><strong>Chrome, Edge, Brave:</strong> <a href="https://chromewebstore.google.com/detail/nmckokihipjgplolmcmjakknndddifde">Export cookie JSON file for Puppeteer</a></li>
+            <li><strong>Firefox:</strong> <a href="https://addons.mozilla.org/en-US/firefox/addon/%E3%82%AF%E3%83%83%E3%82%AD%E3%83%BCjson%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%87%BA%E5%8A%9B-for-puppeteer/">Cookie JSON file export for Puppeteer</a></li></ul></div></li>
+          <li><div><h3>Import it into MultiMessenger</h3><p class="sub">Add the service, click the pencil next to it, and press <strong>Import login from cookies file…</strong>. Choose the file and the service reloads, signed in. <code class="i">cookies.txt</code> files work too.</p></div></li>
+          <li><div><h3>Delete the file</h3><p class="sub">It works like a password for that account.</p></div></li>
+        </ol>
+        <p class="fine" style="margin-top:14px">Use the same proxy in the app as in the browser you exported from, and only install extensions you trust. Sites can still ask you to verify or sign you out later; just repeat the steps.</p>
       </section>
 
       <section id="themes">

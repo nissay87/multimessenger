@@ -44,6 +44,7 @@ You have a dozen tabs open: WhatsApp, Telegram, mail, three AI chats, Instagram.
 | 🔔 **Real notifications** | Website notifications become Windows notifications. Unread counts on the sidebar, the taskbar and the tray. |
 | 🗂️ **Workspaces** | Group services into *Social media*, *AI*, *Mail*, *Work* and switch with one click. |
 | ⬇️ **Video downloader** | Pick the exact YouTube quality, or download Instagram and Facebook videos in one click. MP4 plus the MKV original. |
+| 🔑 **Login import** | Sites that refuse sign-in in apps (Google, X): sign in with your normal browser and import the cookies file. |
 | 🎨 **14 themes** | From Windows 11 and GNOME to Windows XP, Classic Mac, MS-DOS and Plan 9. |
 | 🔍 **Zoom per service** | Each service remembers its own zoom. |
 | 😴 **Always on or asleep** | Keep a service running, or unload it after a few minutes to save memory. |
@@ -98,7 +99,6 @@ Need a second account? Add the service again, or open its settings and choose **
 ## 🔔 Stays connected, tells you when something arrives
 
 - **Browser identity and separate sign-in window**: if a website refuses to sign in, open the service's settings, choose another **Browser identity** (Chrome, Firefox or Edge), save and reload it, or press **Sign in in a separate window…**. The window shares the service's login and closes back into the service.
-- **Import a login from your normal browser**: Google and X can refuse sign-in inside any embedded app. Sign in once in Chrome or Firefox, export that site's cookies with a cookie-export extension (for example the open-source *Get cookies.txt LOCALLY*), then use the service's settings → **Import login from cookies file…**. Treat the file like a password and delete it afterwards. Sites may still ask you to verify later.
 - **Notifications**: a website's own notifications become native Windows notifications. Click one to open that service.
 - **Unread counts**: red numbers on the sidebar, the taskbar icon and the tray tooltip. Mute any service.
 - **Tray and taskbar**: minimize goes to the taskbar, closing the window hides the app in the tray. On Windows 11 the app asks to keep its tray icon visible instead of tucked under the hidden **^** area (Settings → *Keep the tray icon visible*). On Windows 10, drag the icon out of the **^** area once, or use the *open taskbar settings* button.
@@ -128,6 +128,28 @@ Powered by [yt-dlp](https://github.com/yt-dlp/yt-dlp) and ffmpeg, fetched once o
 <div align="center">
 <img src="docs/assets/downloads.png" alt="Downloads section with finished video and MP3 downloads" width="820" />
 </div>
+
+---
+
+## 🔑 Sign in with a cookies file (Google, X and other strict sites)
+
+Some websites, **Google** (Gmail, YouTube) and **X** above all, refuse to show their sign-in page inside any desktop app ("This browser or app may not be secure", or an endless "confirm your account" check). MultiMessenger has a way around the sign-in page: you sign in with your **normal browser** and import that login.
+
+1. **Sign in** to the website in Chrome, Edge or Firefox as usual.
+2. **Export its cookies** with a cookie-export extension, while you are on that website:
+   - **Chrome / Edge / Brave:** [Export cookie JSON file for Puppeteer](https://chromewebstore.google.com/detail/nmckokihipjgplolmcmjakknndddifde)
+   - **Firefox:** [クッキーJSONファイル出力 for Puppeteer](https://addons.mozilla.org/en-US/firefox/addon/%E3%82%AF%E3%83%83%E3%82%AD%E3%83%BCjson%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%87%BA%E5%8A%9B-for-puppeteer/)
+
+   They save a `.json` file. A `cookies.txt` file from other exporters works too.
+3. In MultiMessenger, add the service (for example X), click the **pencil** next to it, and press **Import login from cookies file…**.
+4. Choose the file. The service reloads and you are signed in.
+5. **Delete the file.** It works like a password for that account.
+
+Tips:
+- Use the same proxy (or no proxy) in the app as in the browser you exported from. Many sites distrust a login that suddenly changes country.
+- For Google services, export from `google.com` and again from `youtube.com` if needed, and import both files.
+- Sites can still sign you out later or ask you to verify. Repeat the steps if that happens.
+- Only install extensions you trust. Cookie extensions can read every site you visit.
 
 ---
 
@@ -373,8 +395,8 @@ On Windows open the terminal **as Administrator** (or turn on Developer Mode). T
 The repository contains `.github/workflows/release.yml`. Push a version tag and GitHub builds the **Windows, macOS and Linux** files on its own servers and attaches them to a release:
 
 ```bash
-git tag v1.3.25
-git push origin v1.3.25
+git tag v1.3.26
+git push origin v1.3.26
 ```
 
 Wait a few minutes, then open **Releases**. (You can also run it by hand from the **Actions** tab.)
